@@ -36,7 +36,7 @@
 #' rootChars <- rootSize(HU_426, pixelA = 0.244141^2)
 #' 
 #' # plot using "ggplot" package after transforming with "reshape2" package
-#' area.long <- melt(rootChars, id.vars = c("depth"), measure.vars = grep("Area", names(rootChars2)))
+#' area.long <- melt(rootChars, id.vars = c("depth"), measure.vars = grep("Area", names(rootChars)))
 #' ggplot(data = area.long, aes(y = -depth, x = value, color = variable)) + 
 #' geom_point() + theme_classic() + xlab("root external surface area per slice (cm2)")
 #' }

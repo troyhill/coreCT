@@ -36,10 +36,10 @@
 #' # convert raw units to Hounsfield units
 #' HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 #' 
-#' materials <- conv(HU_426)
+#' materials <- conv(HU_426, pixelA = 0.244141^2)
 #' 
 #' plot using "ggplot" package after transforming with "reshape2" package
-#' mass.long <- melt(materials, id.vars = c("depth"), measure.vars = grep(".g", names(rootChars2)))
+#' mass.long <- melt(materials, id.vars = c("depth"), measure.vars = grep(".g", names(materials)))
 #' ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
 #' geom_point() + theme_classic() + xlab("mass per section (g)")
 #' }
