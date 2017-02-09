@@ -90,7 +90,8 @@ rootSize <- function (mat.list, pixelA,
           # make a new raster to be sieved
           maskSieve <- rmat.int
           # assign NA to all clumps whose IDs are NOT found in excludeID
-          maskSieve[!rmat.int %in% includeID] <- NA
+          # maskSieve[!maskSieve %in% includeID] <- NA # 
+          maskSieve <- raster::match(maskSieve, includeID)
 
           # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
           a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE)) # number of "1"s x pixelSide = edge length
