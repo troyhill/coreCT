@@ -28,7 +28,6 @@
 #' @seealso \code{\link{rootSize}} operates similarly.
 #' 
 #' @examples
-#' ### Not run:
 #' \dontrun{
 #' data(core_426)
 #' ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
@@ -38,7 +37,7 @@
 #' 
 #' materials <- conv(HU_426, pixelA = 0.244141^2)
 #' 
-#' plot using "ggplot" package after transforming with "reshape2" package
+#' # plot using "ggplot" package after transforming with "reshape2" package
 #' mass.long <- melt(materials, id.vars = c("depth"), measure.vars = grep(".g", names(materials)))
 #' ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
 #' geom_point() + theme_classic() + xlab("mass per section (g)")

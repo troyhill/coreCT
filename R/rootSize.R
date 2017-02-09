@@ -25,7 +25,6 @@
 #' @seealso \code{\link{conv}}
 #' 
 #' @examples
-#' ### Not run:
 #' \dontrun{
 #' data(core_426)
 #' ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
@@ -61,7 +60,7 @@ rootSize <- function (mat.list, pixelA,
           waterHU = 63.912,
           waterSD = 14.1728) {
   # function creates dataframe with root/rhizome numbers and perimeter(!) for each depth interval
-  pb <- txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
+  pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   voxelVol <- pixelA * thickness / 1e3 # cm3
   water.LB <- waterHU - waterSD
   # clump IDs extracted on basis of area
@@ -132,12 +131,12 @@ rootSize <- function (mat.list, pixelA,
     } else if (i == 1) {
       outDat <- outDatInt2
     }
-    setTxtProgressBar(pb, i)
+    utils::setTxtProgressBar(pb, i)
   }
   outDat <- outDat[ , order(names(outDat))] # sort columns alphabetically (by material), rather than size class
   ### TODO: aggregate parameters
   outDat$structures <- base::rowSums(outDat[, grep("particles", names(outDat))])
-  outDat$totArea <- base::rowSums(outDat[, grep("Area", names(outDat))])
+  outDat$totArea    <- base::rowSums(outDat[, grep("Area", names(outDat))])
   # outDat$totVol <- base::rowSums(outDat[, grep("Vol", names(outDat))])
   outDat
 }
