@@ -1,0 +1,4 @@
+conv                    Calculates the area and volume of material in each CT slice
+getSurface              Remove artificial surface layers
+rootSize                Calculates root surface area
+core_426                Sample data from a Spartina alterniflora core
