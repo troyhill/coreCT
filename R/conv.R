@@ -6,8 +6,9 @@
 #' 
 #' @usage conv(mat.list, upperLim = 3045, lowerLim = -1024, 
 #' pixelA, thickness = 0.625, # all in mm 
-#' airHU = -850.3233, 
-#' SiHU = 271.7827, glassHU = 1345.0696,
+#' airHU = -850.3233, airSD = 77.6953, 
+#' SiHU = 271.7827, SiSD = 39.2814,
+#' glassHU = 1345.0696, glassSD = 45.4129,
 #' waterHU = 63.912, waterSD = 14.1728,
 #' densities = c(0.0012, 1, 1.23, 2.2))
 #' 
@@ -17,10 +18,13 @@
 #' @param pixelA pixel area (mm2)
 #' @param thickness CT image thickness (mm)
 #' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
-#' @param SiHU mean value for colloidal silica calibration rod (Hounsfield Units)
-#' @param glassHU mean value for glass calibration rod (Hounsfield Units)
-#' @param waterHU mean value for water-filled calibration rod (Hounsfield Units)
-#' @param waterSD standard deviation for water-filled calibration rod (Hounsfield Units)
+#' @param airSD standard deviation for air-filled calibration rod
+#' @param SiHU mean value for colloidal silica calibration rod 
+#' @param SiSD standard deviation for colloidal Si calibration rod
+#' @param glassHU mean value for glass calibration rod
+#' @param glassSD standard deviation for glass calibration rod
+#' @param waterHU mean value for water filled calibration rod
+#' @param waterSD standard deviation for water filled calibration rod
 #' @param densities numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)
 #' 
 #' @return value \code{conv} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
@@ -58,20 +62,20 @@
 # and summarize by category
 conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
                  pixelA, thickness = 0.625, # all in mm
-                 airHU = -850.3233,
-                 SiHU = 271.7827,
-                 glassHU = 1345.0696,
-                 waterHU = 63.912,
-                 waterSD = 14.1728,
+                 airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
+                 SiHU = 271.7827, SiSD = 39.2814,
+                 glassHU = 1345.0696, glassSD = 45.4129,
+                 waterHU = 63.912, waterSD = 14.1728,
                  densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
 ) {
   pb <- txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   voxelVol <- pixelA * thickness / 1e3 # cm3
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
-  splits <- data.frame(material = c("air", "R&R", "water", "peat", "particles", "sand", "rock_shell"),
-                       lower = c(round(lowerLim), round(airHU), round(water.LB), round(water.UB), round(SiHU), 750, round(glassHU)), 
-                       upper = c(round(airHU), round(water.LB), round(water.UB), round(SiHU), 750, round(glassHU), round(upperLim)))
+  # note: Earl adds 1 to switch between categories
+  splits <- data.frame(material = c("air",             "R&R",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
+                       lower = c(round(lowerLim),      round(airHU + airSD), round(water.LB), round(water.UB),    round(SiHU + SiSD), 750,                      round(glassHU + glassSD)), 
+                       upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
   
   densitydf <- data.frame(HU = c(airHU, waterHU, SiHU, glassHU), density = densities)
   summary(lm1 <- lm(density ~ HU, data = densitydf)) # density in g/cm3
@@ -80,8 +84,9 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
     depth <- thickness * i / 10 # cm
     temp <- as.vector(mat.list[[i]])
     # convert from HU to g/cm3
-    temp <- temp[(temp > lowerLim) & (temp < upperLim)] # subset based on upper and lower limits
-    bin <- cut(temp, breaks = c(splits$lower, upperLim), labels = splits$material, right = FALSE)
+    # subset based on upper and lower limits (eclusive at lower end, inclusive at upper; see cut(right = TRUE) argument)
+    temp <- temp[(temp > lowerLim) & (temp <= upperLim)] 
+    bin <- base::cut(temp, breaks = c(splits$lower, upperLim), labels = splits$material, right = TRUE)
     
     if (length(temp) > 0) {
       temp.output.int <- table(bin) * pixelA / 1e2 # number of pixels * pixel area = area in class (cm2)
