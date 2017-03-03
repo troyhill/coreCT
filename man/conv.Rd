@@ -6,8 +6,9 @@
 \usage{
 conv(mat.list, upperLim = 3045, lowerLim = -1024, 
 pixelA, thickness = 0.625, # all in mm 
-airHU = -850.3233, 
-SiHU = 271.7827, glassHU = 1345.0696,
+airHU = -850.3233, airSD = 77.6953, 
+SiHU = 271.7827, SiSD = 39.2814,
+glassHU = 1345.0696, glassSD = 45.4129,
 waterHU = 63.912, waterSD = 14.1728,
 densities = c(0.0012, 1, 1.23, 2.2))
 }
@@ -24,13 +25,19 @@ densities = c(0.0012, 1, 1.23, 2.2))
 
 \item{airHU}{mean value for air-filled calibration rod (Hounsfield Units)}
 
-\item{SiHU}{mean value for colloidal silica calibration rod (Hounsfield Units)}
+\item{airSD}{standard deviation for air-filled calibration rod}
 
-\item{glassHU}{mean value for glass calibration rod (Hounsfield Units)}
+\item{SiHU}{mean value for colloidal silica calibration rod}
 
-\item{waterHU}{mean value for water-filled calibration rod (Hounsfield Units)}
+\item{SiSD}{standard deviation for colloidal Si calibration rod}
 
-\item{waterSD}{standard deviation for water-filled calibration rod (Hounsfield Units)}
+\item{glassHU}{mean value for glass calibration rod}
+
+\item{glassSD}{standard deviation for glass calibration rod}
+
+\item{waterHU}{mean value for water filled calibration rod}
+
+\item{waterSD}{standard deviation for water filled calibration rod}
 
 \item{densities}{numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)}
 }
@@ -44,7 +51,6 @@ Calculates the area and volume of material classes for each CT slice
 Calculates the area and volume of material classes for each CT slice
 }
 \examples{
-### Not run:
 \dontrun{
 data(core_426)
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
