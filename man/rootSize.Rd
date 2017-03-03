@@ -8,6 +8,7 @@ rootSize(mat.list, pixelA, diameter = c(1, 2, 5, 10, 20),
 class.names = diameter,
 thickness = 0.625,
 airHU = -850.3233,
+airSD = 77.6953,
 waterHU = 63.912,
 waterSD = 14.1728)
 }
@@ -22,11 +23,13 @@ waterSD = 14.1728)
 
 \item{thickness}{CT image thickness (mm)}
 
-\item{airHU}{mean value for air-filled calibration rod (Hounsfield Units)}
+\item{airHU}{mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)}
 
-\item{waterHU}{mean value for water-filled calibration rod (Hounsfield Units)}
+\item{airSD}{standard deviation for air-filled calibration rod}
 
-\item{waterSD}{standard deviation for water-filled calibration rod (Hounsfield Units)}
+\item{waterHU}{mean value for water-filled calibration rod}
+
+\item{waterSD}{standard deviation for water-filled calibration rod}
 }
 \value{
 value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter}.
@@ -38,7 +41,6 @@ Calculates the number of root/rhizome particles and surface areas, for different
 Calculates the number of root/rhizome particles and surface areas, for different size classes
 }
 \examples{
-### Not run:
 \dontrun{
 data(core_426)
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
