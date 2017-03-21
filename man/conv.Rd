@@ -61,9 +61,11 @@ HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 materials <- conv(HU_426, pixelA = 0.244141^2)
 
 # plot using "ggplot" package after transforming with "reshape2" package
-mass.long <- reshape2::melt(materials, id.vars = c("depth"), measure.vars = grep(".g", names(materials)))
-ggplot2::ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
-geom_point() + theme_classic() + xlab("mass per section (g)")
+mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
+   measure.vars = grep(".g", names(materials)))
+ggplot2::ggplot(data = mass.long, ggplot2::aes(y = -depth, x = value, 
+   color = variable)) + ggplot2::geom_point() + ggplot2::theme_classic() + 
+   ggplot2::xlab("mass per section (g)")
 }
 
 }
