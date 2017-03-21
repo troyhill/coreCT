@@ -42,8 +42,9 @@
 #' materials <- conv(HU_426, pixelA = 0.244141^2)
 #' 
 #' # plot using "ggplot" package after transforming with "reshape2" package
-#' mass.long <- melt(materials, id.vars = c("depth"), measure.vars = grep(".g", names(materials)))
-#' ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
+#' mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
+#'    measure.vars = grep(".g", names(materials)))
+#' ggplot2::ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
 #' geom_point() + theme_classic() + xlab("mass per section (g)")
 #' }
 #' 
@@ -75,6 +76,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
   # note: Earl adds 1 to switch between categories
   splits <- data.frame(material = c("air",             "R&R",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
                        lower = c(round(lowerLim),      round(airHU + airSD), round(water.LB), round(water.UB),    round(SiHU + SiSD), 750,                      round(glassHU + glassSD)), 
+                       #lower = c(round(lowerLim),        round(airHU+airSD) + 1, round(water.LB) + 1, round(water.UB) + 1,    round(SiHU + SiSD) + 1, 750 + 1,                      round(glassHU + glassSD) + 1), 
                        upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
   
   densitydf <- data.frame(HU = c(airHU, waterHU, SiHU, glassHU), density = densities)
