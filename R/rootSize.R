@@ -39,8 +39,9 @@
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' area.long <- reshape2::melt(rootChars, id.vars = c("depth"), 
 #'    measure.vars = grep("Area", names(rootChars)))
-#' ggplot2::ggplot(data = area.long, aes(y = -depth, x = value, color = variable)) + 
-#' geom_point() + theme_classic() + xlab("root external surface area per slice (cm2)")
+#' ggplot2::ggplot(data = area.long, ggplot2::aes(y = -depth, x = value, 
+#'    color = variable)) + ggplot2::geom_point() + ggplot2::theme_classic() + 
+#'    ggplot2::xlab("root external surface area per slice (cm2)")
 #' }
 #' 
 #' @importFrom raster freq

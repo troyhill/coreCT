@@ -44,8 +44,9 @@
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
 #'    measure.vars = grep(".g", names(materials)))
-#' ggplot2::ggplot(data = mass.long, aes(y = -depth, x = value, color = variable)) + 
-#' geom_point() + theme_classic() + xlab("mass per section (g)")
+#' ggplot2::ggplot(data = mass.long, ggplot2::aes(y = -depth, x = value, 
+#'    color = variable)) + ggplot2::geom_point() + ggplot2::theme_classic() + 
+#'    ggplot2::xlab("mass per section (g)")
 #' }
 #' 
 #' @importFrom utils setTxtProgressBar
