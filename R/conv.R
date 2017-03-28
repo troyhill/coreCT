@@ -110,7 +110,9 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
       mass.output[is.na(mass.output)] <- 0
       names(mass.output) <- paste0(test[, 1], ".g")
       
-      outDat.init <- do.call(cbind, list(temp.output, vol.output, mass.output))
+      outDat.init <- do.call(cbind, list(temp.output[, order(names(temp.output))], 
+                                         vol.output[, order(names(vol.output))], 
+                                         mass.output))
     } else {
       outDat.init <- outDat[1, ]
       outDat.init$depth <- depth
