@@ -84,6 +84,7 @@ rootSize <- function (mat.list, pixelA,
     temp <- mat.list[[i]]
     temp[(temp > air.UB) & (temp <= water.LB)] <- 1 # isolate pixels with R&R density, change to 1
     temp[!temp == 1] <- NA # make sure only two values exist: 1, NA
+    if(length(temp) == 0) next 
     
     if (length(!is.na(temp)) > 0) {
       rmat <- raster::raster(temp)
@@ -138,9 +139,9 @@ rootSize <- function (mat.list, pixelA,
     # convert NAs to zeroes
     outDatInt2$depth <- depth
     
-    if (i > 1) {
+    if ((i > 1)  & exists("outDat")) {
       outDat <- rbind(outDat, outDatInt2)
-    } else if (i == 1) {
+    } else {
       outDat <- outDatInt2
     }
     utils::setTxtProgressBar(pb, i)
