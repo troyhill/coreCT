@@ -89,6 +89,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
     # convert from HU to g/cm3
     # subset based on upper and lower limits (eclusive at lower end, inclusive at upper; see cut(right = TRUE) argument)
     temp <- temp[(temp > lowerLim) & (temp <= upperLim)] 
+    if(length(temp) == 0) next ### added 20170328
     bin <- base::cut(temp, breaks = c(splits$lower, upperLim), labels = splits$material, right = TRUE)
     
     if (length(temp) > 0) {
@@ -115,9 +116,9 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
       outDat.init$depth <- depth
     }
     
-    if (i > 1) {
+    if ((i > 1) & exists("outDat")) { 
       outDat <- rbind(outDat, outDat.init)
-    } else if (i == 1) {
+    } else {
       outDat <- outDat.init
     }
     setTxtProgressBar(pb, i)
