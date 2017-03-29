@@ -9,7 +9,10 @@ airHU = -850.3233, airSD = 77.6953,
 SiHU = 271.7827, SiSD = 39.2814,
 glassHU = 1345.0696, glassSD = 45.4129,
 waterHU = 63.912, waterSD = 14.1728,
-densities = c(0.0012, 1, 1.23, 2.2))
+densities = c(0.0012, 1, 1.23, 2.2),
+rootData = FALSE, 
+diameter = c(1, 2, 5, 10, 20), 
+class.names = diameter)
 }
 \arguments{
 \item{directory}{folder of DICOM images(raw values)}
@@ -35,6 +38,12 @@ densities = c(0.0012, 1, 1.23, 2.2))
 \item{waterSD}{standard deviation for water filled calibration rod}
 
 \item{densities}{numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)}
+
+\item{rootData}{if TRUE, \code{rootSize} is also called on the matrix}
+
+\item{diameter}{if rootData is TRUE, this argument provides an integer vector of diameter cut points used by \code{rootSize}. Units are mm (zero is added in automatically).}
+
+\item{class.names}{placeholder, not used presently}
 }
 \value{
 value \code{convDir} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
