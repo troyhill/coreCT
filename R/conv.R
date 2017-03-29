@@ -1,8 +1,8 @@
-#' @title Convert Hounsfield Units to material classes
+#' @title Convert a matrix of semi-processed DICOM images to mass and volume of material classes
 #'
-#' @description Calculates the area and volume of material classes for each CT slice
+#' @description Calculates the mass, cross-sectional area, and volume of material classes for each CT slice.
 #'
-#' @details Calculates the area and volume of material classes for each CT slice
+#' @details Calculates the mass, cross-sectional area, and volume of material classes for each CT slice. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
 #' @usage conv(mat.list, upperLim = 3045, lowerLim = -1024, 
 #' pixelA, thickness = 0.625, # all in mm 
@@ -12,7 +12,7 @@
 #' waterHU = 63.912, waterSD = 14.1728,
 #' densities = c(0.0012, 1, 1.23, 2.2))
 #' 
-#' @param mat.list list of DICOM images for a sediment core
+#' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units)
 #' @param pixelA pixel area (mm2)

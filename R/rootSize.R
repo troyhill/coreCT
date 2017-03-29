@@ -1,8 +1,8 @@
-#' @title Root surface area
+#' @title Convert a matrix of semi-processed DICOM images to root particles and surface areas
 #'
 #' @description Calculates the number of root/rhizome particles and surface areas, for different size classes
 #'
-#' @details Calculates the number of root/rhizome particles and surface areas, for different size classes
+#' @details Calculates the number of root/rhizome particles and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
 #' @usage rootSize(mat.list, pixelA, diameter = c(1, 2, 5, 10, 20),
 #' class.names = diameter,
@@ -12,7 +12,7 @@
 #' waterHU = 63.912,
 #' waterSD = 14.1728)
 #' 
-#' @param mat.list list of DICOM images for a sediment core
+#' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param pixelA pixel area (mm2)
 #' @param diameter an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
