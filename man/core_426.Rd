@@ -4,17 +4,12 @@
 \name{core_426}
 \alias{core_426}
 \title{Ninety-five CT scans from the top of a Spartina alterniflora core}
-\format{A list of 95 lists, each with two elements:
-\describe{
-  \item{hdr}{header information and metadata}
-  \item{img}{CT image data}
-  ...
-}}
+\format{A list of 95 matrices, each with two elements: header and image data}
 \usage{
-core_426
+data(core_426)
 }
 \description{
-CT scans loaded by oro.dicom::readDICOM.
+Ninety-five CT scans from the top of a Spartina alterniflora core
 }
 \keyword{datasets}
 
