@@ -9,7 +9,10 @@
 #' SiHU = 271.7827, SiSD = 39.2814,
 #' glassHU = 1345.0696, glassSD = 45.4129,
 #' waterHU = 63.912, waterSD = 14.1728,
-#' densities = c(0.0012, 1, 1.23, 2.2))
+#' densities = c(0.0012, 1, 1.23, 2.2),
+#' rootData = FALSE, 
+#' diameter = c(1, 2, 5, 10, 20), 
+#' class.names = diameter)
 #' 
 #' @param directory folder of DICOM images(raw values)
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
