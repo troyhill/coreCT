@@ -92,7 +92,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
     if(length(temp) == 0) next ### added 20170328
     bin <- base::cut(temp, breaks = c(splits$lower, upperLim), labels = splits$material, right = TRUE)
     
-    if (length(temp) > 0) {
+    # if (length(temp) > 0) {
       temp.output.int <- table(bin) * pixelA / 1e2 # number of pixels * pixel area = area in class (cm2)
       temp.output <- data.frame(t(as.vector(temp.output.int))) # cm2
       names(temp.output) <- paste0(names(temp.output.int), ".cm2")
@@ -113,10 +113,10 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
       outDat.init <- do.call(cbind, list(temp.output[, order(names(temp.output))], 
                                          vol.output[, order(names(vol.output))], 
                                          mass.output))
-    } else {
-      outDat.init <- outDat[1, ]
-      outDat.init$depth <- depth
-    }
+    # } else {
+    #   outDat.init <- outDat[1, ]
+    #   outDat.init$depth <- depth
+    # }
     
     if ((i > 1) & exists("outDat")) { 
       outDat <- rbind(outDat, outDat.init)

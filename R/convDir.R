@@ -23,6 +23,9 @@
 #' @param waterHU mean value for water filled calibration rod
 #' @param waterSD standard deviation for water filled calibration rod
 #' @param densities numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)
+#' @param rootData if TRUE, \code{rootSize} is also called on the matrix
+#' @param diameter if rootData is TRUE, this argument provides an integer vector of diameter cut points used by \code{rootSize}. Units are mm (zero is added in automatically).
+#' @param class.names placeholder, not used presently
 #' 
 #' @return value \code{convDir} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
 #' 
@@ -59,7 +62,8 @@ convDir <- function(directory, upperLim = 3045, lowerLim = -1024,
                  SiHU = 271.7827, SiSD = 39.2814,
                  glassHU = 1345.0696, glassSD = 45.4129,
                  waterHU = 63.912, waterSD = 14.1728,
-                 densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
+                 densities = c(0.0012, 1, 1.23, 2.2), # format = air, water, Si, glass
+                 rootData = FALSE, diameter = c(1, 2, 5, 10, 20), class.names = diameter
 ) {
   # load DICOMs, takes a couple minutes
   fname   <- readDICOM(directory, verbose = TRUE) 
@@ -72,9 +76,16 @@ convDir <- function(directory, upperLim = 3045, lowerLim = -1024,
   thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
   # pass data to conv()
   returnDat <- conv(mat.list = HU, pixelA = pixelArea, thickness = thick,
+                         upperLim, lowerLim,
                          airHU, airSD,
                          SiHU, SiSD,
                          glassHU, glassSD,
-                         waterHU, waterSD)
+                         waterHU, waterSD, densities)
+  if (rootData == TRUE) {
+    rootsDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
+                         diameter, class.names, airHU, airSD, waterHU, waterSD)
+    returnDat <- cbind(returnDat, rootsDat)
+  }
+  
   returnDat
 }
