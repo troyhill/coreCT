@@ -1,5 +1,6 @@
 # coreCT
-Analyze CT-scanned sediment cores in R
+
+CoreCT streamlines analysis of CT-scanned sediment cores using R. 
 
 
 
