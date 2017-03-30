@@ -1,6 +1,6 @@
 # coreCT
 
-CoreCT streamlines analysis of CT-scanned sediment cores using R. 
+coreCT is an R package that streamlines analysis of CT-scanned sediment cores. 
 
 
 
