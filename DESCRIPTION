@@ -1,8 +1,8 @@
 Package: coreCT
 Type: Package
 Title: Tools for Analysis of CT-Scanned Sediment Cores
-Version: 1.0.1
-Date: 2017-03-28
+Version: 1.0.2
+Date: 2017-04-04
 Author: Troy D. Hill <Hill.Troy@gmail.com>, Earl Davey
     <Davey.Earl@epa.gov>
 Maintainer: Troy D. Hill <Hill.Troy@gmail.com>
@@ -14,5 +14,6 @@ Depends:
     R (>= 3.0),
     raster,
     igraph,
-    oro.dicom
-RoxygenNote: 5.0.1
+    oro.dicom,
+    plyr
+RoxygenNote: 6.0.1
