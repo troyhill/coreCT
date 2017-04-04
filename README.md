@@ -17,4 +17,7 @@ To install and load coreCT, run the following commands in R:
 
 coreCT allows 
 
+<img src="https://raw.githubusercontent.com/troyhill/images/master/221_20160607_rootVol.png" width="50" height="50" />
+
+### test
 ![plot?](https://raw.githubusercontent.com/troyhill/images/master/221_20160607_rootVol.png "volumes of live root/rhizome size classes")
