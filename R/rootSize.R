@@ -1,28 +1,30 @@
-#' @title Convert a matrix of semi-processed DICOM images to root particles and surface areas
+#' @title Convert a matrix of semi-processed DICOM images to root particle counts, volumes, and surface areas
 #'
-#' @description Calculates the number of root/rhizome particles and surface areas, for different size classes
+#' @description Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes
 #'
-#' @details Calculates the number of root/rhizome particles and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
+#' @details Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
-#' @usage rootSize(mat.list, pixelA, diameter = c(1, 2, 5, 10, 20),
-#' class.names = diameter,
+#' @usage rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 5, 10, 20),
+#' class.names = diameter.classes,
 #' thickness = 0.625,
 #' airHU = -850.3233,
 #' airSD = 77.6953,
 #' waterHU = 63.912,
-#' waterSD = 14.1728)
+#' waterSD = 14.1728,
+#' pixel.minimum = 1)
 #' 
 #' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param pixelA pixel area (mm2)
-#' @param diameter an integer vector of diameter cut points. Units are mm (zero is added in automatically).
+#' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
 #' @param thickness CT image thickness (mm)
 #' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
 #' @param airSD standard deviation for air-filled calibration rod
 #' @param waterHU mean value for water-filled calibration rod
 #' @param waterSD standard deviation for water-filled calibration rod
+#' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
-#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter}.
+#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter.classes}.
 #' 
 #' @seealso \code{\link{conv}}
 #' 
@@ -59,13 +61,14 @@
 #' @export
 
 rootSize <- function (mat.list, pixelA, 
-                      diameter = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
-                      class.names = diameter,
+                      diameter.classes = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
+                      class.names = diameter.classes,
                       thickness = 0.625, # mm
                       airHU = -850.3233, # Hounsfield Units
                       airSD = 77.6953,
                       waterHU = 63.912,
-                      waterSD = 14.1728) {
+                      waterSD = 14.1728,
+                      pixel.minimum = 1) {
   # function creates dataframe with root/rhizome numbers and perimeter(!) for each depth interval
   pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   voxelVol <- pixelA * thickness / 1e3 # cm3
@@ -74,10 +77,10 @@ rootSize <- function (mat.list, pixelA,
   # clump IDs extracted on basis of area
   # with rule: clumps must be greater than 1 pixel
   # this rule is based on comparison of ImageJ and R results
-  diams <- c(0, diameter) # revise diameter classes to include zero
+  diams <- c(0, diameter.classes) # revise diameter classes to include zero
   thresh.A <- pi*(diams/2)^2 # convert diameter to area
   thresh.pixels <- round(thresh.A / pixelA)  # convert area to no of pixels (irregular clumps are included)
-  thresh.pixels[1] <- 1
+  thresh.pixels[1] <- pixel.minimum
   
   for (i in 1:length(mat.list)) {
     depth <- thickness * i / 10 # cm
@@ -97,7 +100,7 @@ rootSize <- function (mat.list, pixelA,
                                    (clump.sub1$count > thresh.pixels[j-1]) & 
                                    !is.na(clump.sub1$value), ] #clump.sub$A <- clump.sub$count * pixelArea
         includeID <- as.vector(clump.sub$value) # record IDs from clumps which met the criteria in previous step
-        
+        rootVol  <- sum(as.vector(clump.sub$count) * voxelVol) # sum clump volumes in cm3
         # get root perimeter (then multiply by thickness to calculate external surface area)
         # make a new raster to be sieved
         maskSieve <- rmat.int
@@ -115,7 +118,7 @@ rootSize <- function (mat.list, pixelA,
         numberOfClumps <- nrow(clump.sub)
         rootSurfaceArea <- a3 * thickness / 100 # cm2
         # rootSurfaceVol <- rootSurfaceArea * (thickness / 10) # cm3 # tdh: probably not a meaningful parameter
-        outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea) #,surfaceVol = rootSurfaceVol)
+        outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea, rootVolume = rootVol) #,surfaceVol = rootSurfaceVol)
         names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "-", diams[j], "mm")
         
         if (j == 2) {

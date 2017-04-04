@@ -4,22 +4,24 @@
 #'
 #' @details Calculates the number of root/rhizome particles and surface areas, for different size classes. Unlike \code{\link{rootSize}}, \code{\link{rootSizeDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
-#' @usage rootSizeDir(directory, diameter = c(1, 2, 5, 10, 20),
-#' class.names = diameter,
+#' @usage rootSizeDir(directory, diameter.classes = c(1, 2, 5, 10, 20),
+#' class.names = diameter.classes,
 #' airHU = -850.3233,
 #' airSD = 77.6953,
 #' waterHU = 63.912,
-#' waterSD = 14.1728)
+#' waterSD = 14.1728,
+#' pixel.minimum = 1)
 #' 
 #' @param directory directory of DICOM images (raw values)
-#' @param diameter an integer vector of diameter cut points. Units are mm (zero is added in automatically).
+#' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
 #' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
 #' @param airSD standard deviation for air-filled calibration rod
 #' @param waterHU mean value for water-filled calibration rod
 #' @param waterSD standard deviation for water-filled calibration rod
+#' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
-#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter}.
+#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter.classes}.
 #' 
 #' @seealso \code{\link{rootSizeDir}} is a wrapper for \code{\link{rootSize}}. \code{\link{rootSizeDir}} operates similarly.
 #' 
@@ -54,12 +56,13 @@
 #' @export
 
 rootSizeDir <- function (directory, 
-                      diameter = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
-                      class.names = diameter,
-                      airHU = -850.3233, # Hounsfield Units
-                      airSD = 77.6953,
-                      waterHU = 63.912,
-                      waterSD = 14.1728) {
+                        diameter.classes = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
+                        class.names = diameter.classes,
+                        airHU = -850.3233, # Hounsfield Units
+                        airSD = 77.6953,
+                        waterHU = 63.912,
+                        waterSD = 14.1728,
+                        pixel.minimum = 1) {
   # load DICOMs, takes a couple minutes
   fname   <- readDICOM(directory, verbose = TRUE) 
   # scrape some metadata
@@ -72,7 +75,8 @@ rootSizeDir <- function (directory,
   
   # pass data to rootSize()
   returnDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
-                        diameter, class.names, airHU, airSD, waterHU, waterSD)
+                        diameter.classes, class.names, airHU, airSD, waterHU, waterSD,
+                        pixel.minimum = pixel.minimum)
   
   returnDat
 }
