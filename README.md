@@ -1,6 +1,6 @@
 # coreCT
 
-coreCT is an R package that streamlines analysis of CT-scanned sediment cores. 
+'coreCT' is an R package that streamlines analysis of CT-scanned sediment cores. 
 
 
 
@@ -12,3 +12,9 @@ To install and load coreCT, run the following commands in R:
 
     library(coreCT)
 
+
+### About coreCT
+
+coreCT allows 
+
+![plot?](https://raw.githubusercontent.com/troyhill/images/master/221_20160607_rootVol.png "volumes of live root/rhizome size classes")
