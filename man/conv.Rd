@@ -72,4 +72,3 @@ ggplot2::ggplot(data = mass.long, ggplot2::aes(y = -depth, x = value,
 \seealso{
 \code{\link{rootSize}} operates similarly.
 }
-

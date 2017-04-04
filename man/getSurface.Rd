@@ -44,4 +44,3 @@ head(materials2[, 1:6])
 \seealso{
 \code{\link{conv}}
 }
-

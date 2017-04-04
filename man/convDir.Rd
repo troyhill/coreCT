@@ -11,8 +11,9 @@ glassHU = 1345.0696, glassSD = 45.4129,
 waterHU = 63.912, waterSD = 14.1728,
 densities = c(0.0012, 1, 1.23, 2.2),
 rootData = FALSE, 
-diameter = c(1, 2, 5, 10, 20), 
-class.names = diameter)
+diameter.classes = c(1, 2, 5, 10, 20), 
+class.names = diameter.classes,
+pixel.minimum = 1)
 }
 \arguments{
 \item{directory}{folder of DICOM images(raw values)}
@@ -41,9 +42,11 @@ class.names = diameter)
 
 \item{rootData}{if TRUE, \code{rootSize} is also called on the matrix}
 
-\item{diameter}{if rootData is TRUE, this argument provides an integer vector of diameter cut points used by \code{rootSize}. Units are mm (zero is added in automatically).}
+\item{diameter.classes}{if rootData is TRUE, this argument provides an integer vector of diameter cut points used by \code{rootSize}. Units are mm (zero is added in automatically).}
 
 \item{class.names}{placeholder, not used presently}
+
+\item{pixel.minimum}{minimum number of pixels needed for a clump to be identified as a root}
 }
 \value{
 value \code{convDir} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
@@ -71,4 +74,3 @@ ggplot2::ggplot(data = mass.long, ggplot2::aes(y = -depth, x = value,
 \seealso{
 \code{\link{convDir}} is a wrapper for \code{\link{conv}}. \code{\link{rootSizeDir}} operates similarly.
 }
-

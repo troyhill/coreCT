@@ -12,4 +12,3 @@ data(core_426)
 Ninety-five CT scans from the top of a Spartina alterniflora core
 }
 \keyword{datasets}
-

@@ -2,22 +2,23 @@
 % Please edit documentation in R/rootSize.R
 \name{rootSize}
 \alias{rootSize}
-\title{Convert a matrix of semi-processed DICOM images to root particles and surface areas}
+\title{Convert a matrix of semi-processed DICOM images to root particle counts, volumes, and surface areas}
 \usage{
-rootSize(mat.list, pixelA, diameter = c(1, 2, 5, 10, 20),
-class.names = diameter,
+rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 5, 10, 20),
+class.names = diameter.classes,
 thickness = 0.625,
 airHU = -850.3233,
 airSD = 77.6953,
 waterHU = 63.912,
-waterSD = 14.1728)
+waterSD = 14.1728,
+pixel.minimum = 1)
 }
 \arguments{
 \item{mat.list}{list of DICOM images for a sediment core (values in Hounsfield Units)}
 
 \item{pixelA}{pixel area (mm2)}
 
-\item{diameter}{an integer vector of diameter cut points. Units are mm (zero is added in automatically).}
+\item{diameter.classes}{an integer vector of diameter cut points. Units are mm (zero is added in automatically).}
 
 \item{class.names}{not used presently}
 
@@ -30,15 +31,17 @@ waterSD = 14.1728)
 \item{waterHU}{mean value for water-filled calibration rod}
 
 \item{waterSD}{standard deviation for water-filled calibration rod}
+
+\item{pixel.minimum}{minimum number of pixels needed for a clump to be identified as a root}
 }
 \value{
-value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter}.
+value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter.classes}.
 }
 \description{
-Calculates the number of root/rhizome particles and surface areas, for different size classes
+Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes
 }
 \details{
-Calculates the number of root/rhizome particles and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
+Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 }
 \examples{
 \dontrun{
@@ -62,4 +65,3 @@ ggplot2::ggplot(data = area.long, ggplot2::aes(y = -depth, x = value,
 \seealso{
 \code{\link{conv}}
 }
-
