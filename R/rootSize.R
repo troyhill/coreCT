@@ -4,14 +4,14 @@
 #'
 #' @details Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
-#' @usage rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 5, 10, 20),
+#' @usage rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 2.5, 10),
 #' class.names = diameter.classes,
 #' thickness = 0.625,
 #' airHU = -850.3233,
 #' airSD = 77.6953,
 #' waterHU = 63.912,
 #' waterSD = 14.1728,
-#' pixel.minimum = 1)
+#' pixel.minimum = 4)
 #' 
 #' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param pixelA pixel area (mm2)
@@ -61,14 +61,14 @@
 #' @export
 
 rootSize <- function (mat.list, pixelA, 
-                      diameter.classes = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
+                      diameter.classes = c(1, 2, 2.5, 10), # mm, targets clumps less than or equal to "diameter" argument
                       class.names = diameter.classes,
                       thickness = 0.625, # mm
                       airHU = -850.3233, # Hounsfield Units
                       airSD = 77.6953,
                       waterHU = 63.912,
                       waterSD = 14.1728,
-                      pixel.minimum = 1) {
+                      pixel.minimum = 4) {
   # function creates dataframe with root/rhizome numbers and perimeter(!) for each depth interval
   pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   voxelVol <- pixelA * thickness / 1e3 # cm3
@@ -85,6 +85,8 @@ rootSize <- function (mat.list, pixelA,
   for (i in 1:length(mat.list)) {
     depth <- thickness * i / 10 # cm
     temp <- mat.list[[i]]
+    
+    ### adjust here to get size class mass estimates
     temp[(temp > air.UB) & (temp <= water.LB)] <- 1 # isolate pixels with R&R density, change to 1
     temp[!temp == 1] <- NA # make sure only two values exist: 1, NA
     if(length(temp) == 0) next 

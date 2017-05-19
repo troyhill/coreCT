@@ -10,10 +10,10 @@
 #' glassHU = 1345.0696, glassSD = 45.4129,
 #' waterHU = 63.912, waterSD = 14.1728,
 #' densities = c(0.0012, 1, 1.23, 2.2),
-#' rootData = FALSE, 
-#' diameter.classes = c(1, 2, 5, 10, 20), 
+#' rootData = TRUE, 
+#' diameter.classes = c(1, 2, 2.5, 10), 
 #' class.names = diameter.classes,
-#' pixel.minimum = 1)
+#' pixel.minimum = 4)
 #' 
 #' @param directory folder of DICOM images(raw values)
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
@@ -69,9 +69,9 @@ convDir <- function(directory, upperLim = 3045, lowerLim = -1024,
                  glassHU = 1345.0696, glassSD = 45.4129,
                  waterHU = 63.912, waterSD = 14.1728,
                  densities = c(0.0012, 1, 1.23, 2.2), # format = air, water, Si, glass
-                 rootData = FALSE, diameter.classes = c(1, 2, 5, 10, 20), 
+                 rootData = TRUE, diameter.classes = c(1, 2, 2.5, 10), 
                  class.names = diameter.classes,
-                 pixel.minimum = 1
+                 pixel.minimum = 4
 ) {
   # load DICOMs, takes a couple minutes
   fname   <- readDICOM(directory, verbose = TRUE) 
