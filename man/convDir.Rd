@@ -10,10 +10,10 @@ SiHU = 271.7827, SiSD = 39.2814,
 glassHU = 1345.0696, glassSD = 45.4129,
 waterHU = 63.912, waterSD = 14.1728,
 densities = c(0.0012, 1, 1.23, 2.2),
-rootData = FALSE, 
-diameter.classes = c(1, 2, 5, 10, 20), 
+rootData = TRUE, 
+diameter.classes = c(1, 2, 2.5, 10), 
 class.names = diameter.classes,
-pixel.minimum = 1)
+pixel.minimum = 4)
 }
 \arguments{
 \item{directory}{folder of DICOM images(raw values)}

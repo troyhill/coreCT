@@ -4,14 +4,14 @@
 \alias{rootSize}
 \title{Convert a matrix of semi-processed DICOM images to root particle counts, volumes, and surface areas}
 \usage{
-rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 5, 10, 20),
+rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 2.5, 10),
 class.names = diameter.classes,
 thickness = 0.625,
 airHU = -850.3233,
 airSD = 77.6953,
 waterHU = 63.912,
 waterSD = 14.1728,
-pixel.minimum = 1)
+pixel.minimum = 4)
 }
 \arguments{
 \item{mat.list}{list of DICOM images for a sediment core (values in Hounsfield Units)}
