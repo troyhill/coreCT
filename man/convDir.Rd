@@ -4,7 +4,7 @@
 \alias{convDir}
 \title{Convert a directory of raw DICOM images to material classes}
 \usage{
-convDir(directory, upperLim = 3045, lowerLim = -1024, 
+convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1024, 
 airHU = -850.3233, airSD = 77.6953, 
 SiHU = 271.7827, SiSD = 39.2814,
 glassHU = 1345.0696, glassSD = 45.4129,
@@ -16,7 +16,7 @@ class.names = diameter.classes,
 pixel.minimum = 4)
 }
 \arguments{
-\item{directory}{folder of DICOM images(raw values)}
+\item{directory}{folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.}
 
 \item{upperLim}{upper bound cutoff for pixels (Hounsfield Units)}
 

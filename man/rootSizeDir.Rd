@@ -4,7 +4,7 @@
 \alias{rootSizeDir}
 \title{Convert a directory of raw DICOM images to  root particle counts and surface areas}
 \usage{
-rootSizeDir(directory, diameter.classes = c(1, 2, 5, 10, 20),
+rootSizeDir(directory = file.choose(), diameter.classes = c(1, 2, 5, 10, 20),
 class.names = diameter.classes,
 airHU = -850.3233,
 airSD = 77.6953,
@@ -13,7 +13,7 @@ waterSD = 14.1728,
 pixel.minimum = 1)
 }
 \arguments{
-\item{directory}{directory of DICOM images (raw values)}
+\item{directory}{folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.}
 
 \item{diameter.classes}{an integer vector of diameter cut points. Units are mm (zero is added in automatically).}
 
