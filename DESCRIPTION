@@ -1,7 +1,7 @@
 Package: coreCT
 Type: Package
 Title: Tools for Analysis of CT-Scanned Sediment Cores
-Version: 1.0.2
+Version: 1.0.3
 Date: 2017-05-19
 Author: Troy D. Hill <Hill.Troy@gmail.com>, Earl Davey
     <Davey.Earl@epa.gov>
