@@ -4,7 +4,7 @@
 #'
 #' @details Calculates the number of root/rhizome particles and surface areas, for different size classes. Unlike \code{\link{rootSize}}, \code{\link{rootSizeDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
-#' @usage rootSizeDir(directory, diameter.classes = c(1, 2, 5, 10, 20),
+#' @usage rootSizeDir(directory = file.choose(), diameter.classes = c(1, 2, 5, 10, 20),
 #' class.names = diameter.classes,
 #' airHU = -850.3233,
 #' airSD = 77.6953,
@@ -12,7 +12,7 @@
 #' waterSD = 14.1728,
 #' pixel.minimum = 1)
 #' 
-#' @param directory directory of DICOM images (raw values)
+#' @param directory folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.
 #' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
 #' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
@@ -55,7 +55,7 @@
 #' 
 #' @export
 
-rootSizeDir <- function (directory, 
+rootSizeDir <- function (directory = file.choose(), 
                         diameter.classes = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
                         class.names = diameter.classes,
                         airHU = -850.3233, # Hounsfield Units
@@ -63,6 +63,7 @@ rootSizeDir <- function (directory,
                         waterHU = 63.912,
                         waterSD = 14.1728,
                         pixel.minimum = 1) {
+  directory <- dirname(directory)
   # load DICOMs, takes a couple minutes
   fname   <- readDICOM(directory, verbose = TRUE) 
   # scrape some metadata

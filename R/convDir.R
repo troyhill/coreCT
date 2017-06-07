@@ -4,7 +4,7 @@
 #'
 #' @details Calculates the area and volume of material classes for each CT slice in a directory. Unlike \code{\link{conv}}, \code{\link{convDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
-#' @usage convDir(directory, upperLim = 3045, lowerLim = -1024, 
+#' @usage convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1024, 
 #' airHU = -850.3233, airSD = 77.6953, 
 #' SiHU = 271.7827, SiSD = 39.2814,
 #' glassHU = 1345.0696, glassSD = 45.4129,
@@ -15,7 +15,7 @@
 #' class.names = diameter.classes,
 #' pixel.minimum = 4)
 #' 
-#' @param directory folder of DICOM images(raw values)
+#' @param directory folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units)
 #' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
@@ -63,7 +63,8 @@
 # TODO: add command like 
 # temp$bin <- cut(temp[(temp > lowerLim) & (temp < upperLim)], breaks = c(), labels = splits$material)
 # and summarize by category
-convDir <- function(directory, upperLim = 3045, lowerLim = -1024,
+convDir <- function(directory = file.choose(), 
+                 upperLim = 3045, lowerLim = -1024,
                  airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
                  SiHU = 271.7827, SiSD = 39.2814,
                  glassHU = 1345.0696, glassSD = 45.4129,
@@ -73,6 +74,7 @@ convDir <- function(directory, upperLim = 3045, lowerLim = -1024,
                  class.names = diameter.classes,
                  pixel.minimum = 4
 ) {
+  directory <- dirname(directory)
   # load DICOMs, takes a couple minutes
   fname   <- readDICOM(directory, verbose = TRUE) 
   # scrape some metadata
