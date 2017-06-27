@@ -103,16 +103,24 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
       names(vol.output) <- gsub("2", "3", names(temp.output)[1:8])
       
       wetMass <- (temp * coef(lm1)[2] + coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
-      df1 <- data.frame(bin = bin, wetMass = wetMass)
-      test <- aggregate(wetMass ~ bin, data = df1, sum)  # sum mass by category
-      test <- merge(data.frame(bin = splits$material), test, all = TRUE)
+      df1     <- data.frame(bin = bin, wetMass = wetMass, HU = temp)
+      test    <- aggregate(wetMass ~ bin, data = df1, sum)   # sum mass by category
+      test    <- base::merge(data.frame(bin = splits$material), test, all = TRUE)
       mass.output <- data.frame(t(as.vector(test[, 2])))
       mass.output[is.na(mass.output)] <- 0
       names(mass.output) <- paste0(test[, 1], ".g")
       
+      meanHUs <- aggregate(HU ~ bin, data = df1, mean)       # mean HU in each category
+      meanHUs <- base::merge(data.frame(bin = splits$material), meanHUs, all = TRUE)
+      HU.output <- data.frame(t(as.vector(meanHUs[, 2])))
+      HU.output[is.na(HU.output)] <- 0
+      names(HU.output) <- paste0(meanHUs[, 1], ".HU")
+      
+      
       outDat.init <- do.call(cbind, list(temp.output[, order(names(temp.output))], 
-                                         vol.output[, order(names(vol.output))], 
-                                         mass.output))
+                                         HU.output, # mean HU in each class
+                                         vol.output[, order(names(vol.output))], # volume of each class
+                                         mass.output)) # mass of each class
     # } else {
     #   outDat.init <- outDat[1, ]
     #   outDat.init$depth <- depth
