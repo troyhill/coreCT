@@ -32,7 +32,7 @@
 #' @param class.names placeholder, not used presently
 #' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
-#' @return value \code{convDir} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
+#' @return value \code{convDir} returns a dataframe with one row per CT slice. Values returned are the area and volume of seven material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water. If \code{rootData = TRUE}, the output will also contain data on the abundance (number of particles), volume (cm3), and external surface area (cm2) of the root size classes specified in the \code{diameter.classes} argument.
 #' 
 #' @seealso \code{\link{convDir}} is a wrapper for \code{\link{conv}}. \code{\link{rootSizeDir}} operates similarly.
 #' 

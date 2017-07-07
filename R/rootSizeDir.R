@@ -21,7 +21,7 @@
 #' @param waterSD standard deviation for water-filled calibration rod
 #' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
-#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter.classes}.
+#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number, volume (cm3), and surface area (cm2) of particles in each size class with an upper bound defined in \code{diameter.classes}.
 #' 
 #' @seealso \code{\link{rootSizeDir}} is a wrapper for \code{\link{rootSize}}. \code{\link{rootSizeDir}} operates similarly.
 #' 

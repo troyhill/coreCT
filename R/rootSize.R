@@ -24,7 +24,7 @@
 #' @param waterSD standard deviation for water-filled calibration rod
 #' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
-#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number and surface area of particles in each size class with an upper bound defined in \code{diameter.classes}.
+#' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number, volume (cm3), and surface area (cm2) of particles in each size class with an upper bound defined in \code{diameter.classes}.
 #' 
 #' @seealso \code{\link{conv}}
 #' 
@@ -113,12 +113,12 @@ rootSize <- function (mat.list, pixelA,
         # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
         a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE)) # number of "1"s x pixelSide = edge length
         if (nrow(clump.sub) > 0) {
-          a3 <- a2[[3]] * sqrt(pixelA) # one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
+          a3 <- a2[[3]] * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
         } else if (nrow(clump.sub) == 0) {
           a3 <- 0
         }
         numberOfClumps <- nrow(clump.sub)
-        rootSurfaceArea <- a3 * thickness / 100 # cm2
+        rootSurfaceArea <- a3 * thickness / 100 # edge length (mm) * thickness (mm) = mm2 /100 = cm2 of external root surface area in slice
         # rootSurfaceVol <- rootSurfaceArea * (thickness / 10) # cm3 # tdh: probably not a meaningful parameter
         outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea, rootVolume = rootVol) #,surfaceVol = rootSurfaceVol)
         names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "-", diams[j], "mm")
