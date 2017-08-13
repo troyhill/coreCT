@@ -12,7 +12,7 @@
 #' waterSD = 14.1728,
 #' pixel.minimum = 1)
 #' 
-#' @param directory folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.
+#' @param directory a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.
 #' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
 #' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
@@ -26,10 +26,10 @@
 #' @seealso \code{\link{rootSizeDir}} is a wrapper for \code{\link{rootSize}}. \code{\link{rootSizeDir}} operates similarly.
 #' 
 #' @examples
-#' \dontrun{
-#' CTdir <- "C:/RDATA/CT/426/"
-#' rootChars <- rootSizeDir(CTdir)
+#' data(core_426)
+#' rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
 #' 
+#' \dontrun{
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' area.long <- reshape2::melt(rootChars, id.vars = c("depth"), 
 #'    measure.vars = grep("Area", names(rootChars)))
@@ -63,17 +63,30 @@ rootSizeDir <- function (directory = file.choose(),
                         waterHU = 63.912,
                         waterSD = 14.1728,
                         pixel.minimum = 1) {
-  directory <- dirname(directory)
-  # load DICOMs, takes a couple minutes
-  fname   <- readDICOM(directory, verbose = TRUE) 
+  if (!exists(directory)) { # is "directory" an existing object (user-loaded DICOM matrix)
+    
+    if (substr(directory, nchar(directory) - 3, nchar(directory)) %in% ".dcm") {
+      directory <- dirname(directory)
+    } else if (grep("/", directory) == 1) { # dangerously assumes that if there's a forward slash, it's a valid address
+      # directory <- directory # do nothing
+    } else stop("Incorrect directory name: directory specified in a character string must end with a '/'; if 'file.choose()' is used, the selected file must be a dicom image")
+    # load DICOMs, takes a couple minutes
+    fname   <- readDICOM(directory, verbose = TRUE) 
+    
+  } else if (exists(directory) & (sum(names(get(directory)) %in% c("hdr", "img")) == 2)){ # could have better error checking here
+    fname <- get(directory)
+  } else stop("Invalid input: 'directory' object or file location is incorrectly specified.")
   # scrape some metadata
-  pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  pixelArea <- voxDims(directory)$pixelArea.mm2
+  thick     <- voxDims(directory)$thickness.mm
+  # pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  # thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  
+  # convert raw units to Hounsfield units
   ct.slope <- unique(extractHeader(fname$hdr, "RescaleSlope"))
   ct.int   <- unique(extractHeader(fname$hdr, "RescaleIntercept")) 
-  # convert raw units to Hounsfield units
   HU <- lapply(fname$img, function(x) x*ct.slope + ct.int)
-  thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
-  
+
   # pass data to rootSize()
   returnDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
                         diameter.classes, class.names, airHU, airSD, waterHU, waterSD,

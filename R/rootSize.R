@@ -29,15 +29,15 @@
 #' @seealso \code{\link{conv}}
 #' 
 #' @examples
-#' \dontrun{
 #' data(core_426)
 #' ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
 #' ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
 #' # convert raw units to Hounsfield units
 #' HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 #' 
-#' rootChars <- rootSize(HU_426, pixelA = 0.244141^2)
+#' rootChars <- rootSize(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2)
 #' 
+#' \dontrun{
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' area.long <- reshape2::melt(rootChars, id.vars = c("depth"), 
 #'    measure.vars = grep("Area", names(rootChars)))
@@ -79,7 +79,7 @@ rootSize <- function (mat.list, pixelA,
   # this rule is based on comparison of ImageJ and R results
   diams <- c(0, diameter.classes) # revise diameter classes to include zero
   thresh.A <- pi*(diams/2)^2 # convert diameter to area
-  thresh.pixels <- round(thresh.A / pixelA)  # convert area to no of pixels (irregular clumps are included)
+  thresh.pixels <- round(thresh.A / pixelA)  # convert area to no of pixels (irregular clumps are included; should maybe use floor() instead of round())
   thresh.pixels[1] <- pixel.minimum
   
   for (i in 1:length(mat.list)) {
@@ -121,7 +121,7 @@ rootSize <- function (mat.list, pixelA,
         rootSurfaceArea <- a3 * thickness / 100 # edge length (mm) * thickness (mm) = mm2 /100 = cm2 of external root surface area in slice
         # rootSurfaceVol <- rootSurfaceArea * (thickness / 10) # cm3 # tdh: probably not a meaningful parameter
         outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea, rootVolume = rootVol) #,surfaceVol = rootSurfaceVol)
-        names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "-", diams[j], "mm")
+        names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
         
         if (j == 2) {
           outDatInt2 <- outDatInt 
@@ -132,7 +132,7 @@ rootSize <- function (mat.list, pixelA,
     } else if (length(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
       for (j in 2:length(diams)) {
         outDatInt <- data.frame(particles = 0, surfArea = 0) #,surfaceVol = 0)
-        names(outDatInt) <- paste0(names(outDatInt2), ".", diams[j - 1], "-", diams[j], "mm")
+        names(outDatInt) <- paste0(names(outDatInt2), ".", diams[j - 1], "_", diams[j], "mm")
         if (j == 2) {
           outDatInt2 <- outDatInt 
         } else {

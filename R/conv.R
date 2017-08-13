@@ -32,15 +32,15 @@
 #' @seealso \code{\link{rootSize}} operates similarly.
 #' 
 #' @examples
-#' \dontrun{
 #' data(core_426)
 #' ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
 #' ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
 #' # convert raw units to Hounsfield units
 #' HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 #' 
-#' materials <- conv(HU_426, pixelA = 0.244141^2)
+#' materials <- conv(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2)
 #' 
+#' \dontrun{
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
 #'    measure.vars = grep(".g", names(materials)))
@@ -75,7 +75,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
   # note: Earl adds 1 to switch between categories
-  splits <- data.frame(material = c("air",             "R&R",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
+  splits <- data.frame(material = c("air",             "RR",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
                        lower = c(round(lowerLim),      round(airHU + airSD), round(water.LB), round(water.UB),    round(SiHU + SiSD), 750,                      round(glassHU + glassSD)), 
                        #lower = c(round(lowerLim),        round(airHU+airSD) + 1, round(water.LB) + 1, round(water.UB) + 1,    round(SiHU + SiSD) + 1, 750 + 1,                      round(glassHU + glassSD) + 1), 
                        upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
@@ -113,7 +113,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
       meanHUs <- aggregate(HU ~ bin, data = df1, mean)       # mean HU in each category
       meanHUs <- base::merge(data.frame(bin = splits$material), meanHUs, all = TRUE)
       HU.output <- data.frame(t(as.vector(meanHUs[, 2])))
-      HU.output[is.na(HU.output)] <- 0
+      # HU.output[is.na(HU.output)] <- 0 # leave as NA
       names(HU.output) <- paste0(meanHUs[, 1], ".HU")
       
       

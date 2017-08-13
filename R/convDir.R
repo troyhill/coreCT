@@ -15,7 +15,7 @@
 #' class.names = diameter.classes,
 #' pixel.minimum = 4)
 #' 
-#' @param directory folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.
+#' @param directory a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units)
 #' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
@@ -37,10 +37,10 @@
 #' @seealso \code{\link{convDir}} is a wrapper for \code{\link{conv}}. \code{\link{rootSizeDir}} operates similarly.
 #' 
 #' @examples
-#' \dontrun{ 
-#' CTdir <- "C:/RDATA/CT/426/"
-#' materials <- convDir(CTdir)
+#' data(core_426)
+#' materials <- convDir("core_426")
 #' 
+#' \dontrun{ 
 #' # plot using "ggplot" package after transforming with "reshape2" package
 #' mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
 #'    measure.vars = grep(".g", names(materials)))
@@ -74,16 +74,30 @@ convDir <- function(directory = file.choose(),
                  class.names = diameter.classes,
                  pixel.minimum = 4
 ) {
-  directory <- dirname(directory)
-  # load DICOMs, takes a couple minutes
-  fname   <- readDICOM(directory, verbose = TRUE) 
+  if (!exists(directory)) { # is "directory" an existing object (user-loaded DICOM matrix)
+    
+    if (substr(directory, nchar(directory) - 3, nchar(directory)) %in% ".dcm") {
+      directory <- dirname(directory)
+    } else if (grep("/", directory) == 1) { # dangerously assumes that if there's a forward slash, it's a valid address
+      # directory <- directory # do nothing
+    } else stop("Incorrect directory name: directory specified in a character string must end with a '/'; if 'file.choose()' is used, the selected file must be a dicom image")
+    # load DICOMs, takes a couple minutes
+    fname   <- readDICOM(directory, verbose = TRUE) 
+    
+  } else if (exists(directory) & (sum(names(get(directory)) %in% c("hdr", "img")) == 2)){ # could have better error checking here
+    fname <- get(directory)
+  } else stop("Invalid input: 'directory' object or file location is incorrectly specified.")
   # scrape some metadata
-  pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  pixelArea <- voxDims(directory)$pixelArea.mm2
+  thick     <- voxDims(directory)$thickness.mm
+  # pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  # thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  
+  # convert raw units to Hounsfield units
   ct.slope <- unique(extractHeader(fname$hdr, "RescaleSlope"))
   ct.int   <- unique(extractHeader(fname$hdr, "RescaleIntercept")) 
-  # convert raw units to Hounsfield units
   HU <- lapply(fname$img, function(x) x*ct.slope + ct.int)
-  thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  
   # pass data to conv()
   returnDat <- conv(mat.list = HU, pixelA = pixelArea, thickness = thick,
                          upperLim, lowerLim,
