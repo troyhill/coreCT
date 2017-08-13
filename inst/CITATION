@@ -1,5 +1,5 @@
 bibentry("Manual",
-         title = "coreCT: Analysis of sediment cores using computed tomography imaging",
+         title = "Programmatic analysis of sediment cores using computed tomography imaging",
          author = person("Troy D. Hill, Earl Davey"),
          organization = "",
          address      = "Narragansett, RI",
@@ -8,7 +8,7 @@ bibentry("Manual",
          
          textVersion = 
          paste("Troy D. Hill and Earl Davey (2017). ", 
-               "coreCT: Analysis of sediment cores using computed tomography imaging",
+               "Programmatic analysis of sediment cores using computed tomography imaging",
                "Narragansett, RI",
                "URL https://github.com/troyhill/coreCT",
                sep=""),
