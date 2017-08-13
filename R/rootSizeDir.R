@@ -26,8 +26,7 @@
 #' @seealso \code{\link{rootSizeDir}} is a wrapper for \code{\link{rootSize}}. \code{\link{rootSizeDir}} operates similarly.
 #' 
 #' @examples
-#' data(core_426)
-#' rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
+#' rootChars <- rootSizeDir("core_426", diameter.classes = c(2.5, 10))
 #' 
 #' \dontrun{
 #' # plot using "ggplot" package after transforming with "reshape2" package

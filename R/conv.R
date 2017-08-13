@@ -32,13 +32,12 @@
 #' @seealso \code{\link{rootSize}} operates similarly.
 #' 
 #' @examples
-#' data(core_426)
 #' ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
 #' ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
 #' # convert raw units to Hounsfield units
 #' HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 #' 
-#' materials <- conv(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2)
+#' materials <- conv(HU_426, pixelA = 0.0596)
 #' 
 #' \dontrun{
 #' # plot using "ggplot" package after transforming with "reshape2" package

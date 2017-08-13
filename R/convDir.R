@@ -37,8 +37,8 @@
 #' @seealso \code{\link{convDir}} is a wrapper for \code{\link{conv}}. \code{\link{rootSizeDir}} operates similarly.
 #' 
 #' @examples
-#' data(core_426)
-#' materials <- convDir("core_426")
+#' materials <- convDir("core_426", rootData = FALSE)
+#' 
 #' 
 #' \dontrun{ 
 #' # plot using "ggplot" package after transforming with "reshape2" package
@@ -100,11 +100,12 @@ convDir <- function(directory = file.choose(),
   
   # pass data to conv()
   returnDat <- conv(mat.list = HU, pixelA = pixelArea, thickness = thick,
-                         upperLim, lowerLim,
-                         airHU, airSD,
-                         SiHU, SiSD,
-                         glassHU, glassSD,
-                         waterHU, waterSD, densities)
+                         upperLim = upperLim, lowerLim = lowerLim,
+                         airHU = airHU, airSD = airSD, 
+                         waterHU = waterHU, waterSD = waterSD,
+                         SiHU = SiHU, SiSD = SiSD,
+                         glassHU = glassHU, glassSD = glassSD,
+                         densities = densities)
   if (rootData == TRUE) {
     rootsDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
                          diameter.classes = diameter.classes, class.names = diameter.classes, 
