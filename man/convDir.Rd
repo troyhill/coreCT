@@ -58,8 +58,8 @@ Calculates the area and volume of material classes for each CT slice in a direct
 Calculates the area and volume of material classes for each CT slice in a directory. Unlike \code{\link{conv}}, \code{\link{convDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 }
 \examples{
-data(core_426)
-materials <- convDir("core_426")
+materials <- convDir("core_426", rootData = FALSE)
+
 
 \dontrun{ 
 # plot using "ggplot" package after transforming with "reshape2" package

@@ -39,8 +39,7 @@ Calculates the number of root/rhizome particles and surface areas, for different
 Calculates the number of root/rhizome particles and surface areas, for different size classes. Unlike \code{\link{rootSize}}, \code{\link{rootSizeDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 }
 \examples{
-data(core_426)
-rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
+rootChars <- rootSizeDir("core_426", diameter.classes = c(2.5, 10))
 
 \dontrun{
 # plot using "ggplot" package after transforming with "reshape2" package

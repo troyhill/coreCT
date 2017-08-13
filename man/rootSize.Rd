@@ -44,13 +44,13 @@ Calculates the number of root/rhizome particles, volumes,  and surface areas, fo
 Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 }
 \examples{
-data(core_426)
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
 ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
 # convert raw units to Hounsfield units
 HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 
-rootChars <- rootSize(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2)
+rootChars <- rootSize(HU_426, pixelA = 0.0596,
+diameter.classes = c(2.5, 10))
 
 \dontrun{
 # plot using "ggplot" package after transforming with "reshape2" package
