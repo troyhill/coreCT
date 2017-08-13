@@ -27,7 +27,7 @@ This vignette introduces basic usage of the **coreCT** functions.
 
 ## Data: core_426
 
-The <code>core_426</code> sample dataset included with **coreCT** includes the sixteen DICOM images associated with the top centimeter of a CT-scanned sediment core.
+The <code>core_426</code> sample dataset included with **coreCT** includes three DICOM images from a CT-scanned sediment core. Each image represents a 0.625 mm depth interval, so this dataset is very small, but useful for demonstration purposes.
 
 We'll use this provided dataset to demonstrate how the basic functions <code>conv</code> and <code>rootSize</code> work. These basic functions work with a matrix of DICOM images, but **coreCT** also includes wrapper functions <code>convDir</code> and <code>rootSizeDir</code> that are more flexible, automatically extracting metadata and operating on a directory of raw .dcm files. These wrapper functions load the DICOM images, extract relevant metadata like pixel dimensions, and analyze the images for components and root characteristics.
 
