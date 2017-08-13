@@ -16,7 +16,7 @@ class.names = diameter.classes,
 pixel.minimum = 4)
 }
 \arguments{
-\item{directory}{folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.}
+\item{directory}{a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.}
 
 \item{upperLim}{upper bound cutoff for pixels (Hounsfield Units)}
 
@@ -58,10 +58,10 @@ Calculates the area and volume of material classes for each CT slice in a direct
 Calculates the area and volume of material classes for each CT slice in a directory. Unlike \code{\link{conv}}, \code{\link{convDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 }
 \examples{
-\dontrun{ 
-CTdir <- "C:/RDATA/CT/426/"
-materials <- convDir(CTdir)
+data(core_426)
+materials <- convDir("core_426")
 
+\dontrun{ 
 # plot using "ggplot" package after transforming with "reshape2" package
 mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
    measure.vars = grep(".g", names(materials)))

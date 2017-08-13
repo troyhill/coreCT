@@ -51,15 +51,15 @@ Calculates the mass, cross-sectional area, and volume of material classes for ea
 Calculates the mass, cross-sectional area, and volume of material classes for each CT slice. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 }
 \examples{
-\dontrun{
 data(core_426)
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
 ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
 # convert raw units to Hounsfield units
 HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
 
-materials <- conv(HU_426, pixelA = 0.244141^2)
+materials <- conv(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2)
 
+\dontrun{
 # plot using "ggplot" package after transforming with "reshape2" package
 mass.long <- reshape2::melt(materials, id.vars = c("depth"), 
    measure.vars = grep(".g", names(materials)))

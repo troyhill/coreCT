@@ -13,7 +13,7 @@ waterSD = 14.1728,
 pixel.minimum = 1)
 }
 \arguments{
-\item{directory}{folder of raw DICOM images. Default is for user to select the the desired directory by identifying a single file in the folder.}
+\item{directory}{a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.}
 
 \item{diameter.classes}{an integer vector of diameter cut points. Units are mm (zero is added in automatically).}
 
@@ -39,10 +39,10 @@ Calculates the number of root/rhizome particles and surface areas, for different
 Calculates the number of root/rhizome particles and surface areas, for different size classes. Unlike \code{\link{rootSize}}, \code{\link{rootSizeDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 }
 \examples{
-\dontrun{
-CTdir <- "C:/RDATA/CT/426/"
-rootChars <- rootSizeDir(CTdir)
+data(core_426)
+rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
 
+\dontrun{
 # plot using "ggplot" package after transforming with "reshape2" package
 area.long <- reshape2::melt(rootChars, id.vars = c("depth"), 
    measure.vars = grep("Area", names(rootChars)))
