@@ -35,7 +35,7 @@ We'll use this provided dataset to demonstrate how the basic functions <code>con
 
 Using the basic functions requires some initial work to extract metadata and convert the raw values to Hounsfield Units, the standard units for CT output.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
 library(coreCT)
 # extract metadata and convert raw values to Hounsfield Units
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
@@ -51,7 +51,7 @@ plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)",
 
 This can be done more easily with coreCT::convDir, which automatically extracts DICOM metadata associated with pixel dimensions and converts raw values to Hounsfield Units:
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
 materials <- convDir("core_426")
 
 plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)", ylab = "Depth (cm)")
@@ -66,7 +66,7 @@ By default, root characteristics are calculated when <code>convDir</code> is use
 Conversely, root characteristics can be analyzed without quantifying sediment composition. This uses the <code>rootSize</code> function and its metadata-scraping wrapper function, <code>rootSizeDir</code>:
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
 rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
 
 plot(-depth ~ structures, data = rootChars, xlab = "Root structures (per slice)", ylab = "Depth (cm)")
