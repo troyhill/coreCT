@@ -4,7 +4,7 @@
 \alias{conv}
 \title{Convert a matrix of semi-processed DICOM images to mass and volume of material classes}
 \usage{
-conv(mat.list, upperLim = 3045, lowerLim = -1024, 
+conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 pixelA, thickness = 0.625, # all in mm 
 airHU = -850.3233, airSD = 77.6953, 
 SiHU = 271.7827, SiSD = 39.2814,

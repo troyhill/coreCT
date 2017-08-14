@@ -4,7 +4,7 @@
 \alias{convDir}
 \title{Convert a directory of raw DICOM images to material classes}
 \usage{
-convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1024, 
+convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1025, 
 airHU = -850.3233, airSD = 77.6953, 
 SiHU = 271.7827, SiSD = 39.2814,
 glassHU = 1345.0696, glassSD = 45.4129,
