@@ -76,10 +76,10 @@ rootSizeDir <- function (directory = file.choose(),
     fname <- get(directory)
   } else stop("Invalid input: 'directory' object or file location is incorrectly specified.")
   # scrape some metadata
-  pixelArea <- voxDims(directory)$pixelArea.mm2
-  thick     <- voxDims(directory)$thickness.mm
-  # pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
-  # thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  # pixelArea <- voxDims(directory)$pixelArea.mm2
+  # thick     <- voxDims(directory)$thickness.mm
+  pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
   
   # convert raw units to Hounsfield units
   ct.slope <- unique(extractHeader(fname$hdr, "RescaleSlope"))

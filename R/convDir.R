@@ -4,7 +4,7 @@
 #'
 #' @details Calculates the area and volume of material classes for each CT slice in a directory. Unlike \code{\link{conv}}, \code{\link{convDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
-#' @usage convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1024, 
+#' @usage convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1025, 
 #' airHU = -850.3233, airSD = 77.6953, 
 #' SiHU = 271.7827, SiSD = 39.2814,
 #' glassHU = 1345.0696, glassSD = 45.4129,
@@ -64,7 +64,7 @@
 # temp$bin <- cut(temp[(temp > lowerLim) & (temp < upperLim)], breaks = c(), labels = splits$material)
 # and summarize by category
 convDir <- function(directory = file.choose(), 
-                 upperLim = 3045, lowerLim = -1024,
+                 upperLim = 3045, lowerLim = -1025,
                  airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
                  SiHU = 271.7827, SiSD = 39.2814,
                  glassHU = 1345.0696, glassSD = 45.4129,
@@ -88,10 +88,10 @@ convDir <- function(directory = file.choose(),
     fname <- get(directory)
   } else stop("Invalid input: 'directory' object or file location is incorrectly specified.")
   # scrape some metadata
-  pixelArea <- voxDims(directory)$pixelArea.mm2
-  thick     <- voxDims(directory)$thickness.mm
-  # pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
-  # thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  # pixelArea <- voxDims(directory)$pixelArea.mm2
+  # thick     <- voxDims(directory)$thickness.mm
+  pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
+  thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
   
   # convert raw units to Hounsfield units
   ct.slope <- unique(extractHeader(fname$hdr, "RescaleSlope"))

@@ -4,7 +4,7 @@
 #'
 #' @details Calculates the mass, cross-sectional area, and volume of material classes for each CT slice. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
-#' @usage conv(mat.list, upperLim = 3045, lowerLim = -1024, 
+#' @usage conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 #' pixelA, thickness = 0.625, # all in mm 
 #' airHU = -850.3233, airSD = 77.6953, 
 #' SiHU = 271.7827, SiSD = 39.2814,
@@ -61,7 +61,7 @@
 # TODO: add command like 
 # temp$bin <- cut(temp[(temp > lowerLim) & (temp < upperLim)], breaks = c(), labels = splits$material)
 # and summarize by category
-conv <- function(mat.list, upperLim = 3045, lowerLim = -1024,
+conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                  pixelA, thickness = 0.625, # all in mm
                  airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
                  SiHU = 271.7827, SiSD = 39.2814,
