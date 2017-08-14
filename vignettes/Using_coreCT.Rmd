@@ -1,0 +1,74 @@
+---
+title: "Using coreCT"
+author: "Troy D. Hill"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using_coreCT}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction 
+
+Computed Tomography (CT) imaging has many applications outside the medical field. One such application in the field of environmental science is scanning sediment cores from coastal wetlands, a technique first demonstrated by Davey et al. (2011)^[Davey, E., C. Wigand, R. Johnson, K. Sundberg, J. Morris, and C. Roman. 2011. Use of computed tomography imaging for quantifying coarse roots, rhizomes, peat, and particle densities in marsh soils. Ecological Applications 21(6): 2156-2171. 
+([link to .pdf](https://www.researchgate.net/profile/Cathleen_Wigand/publication/51662596_Use_of_computed_tomography_imaging_for_quantifying_coarse_roots_rhizomes_peat_and_particle_densities_in_marsh_soils/links/545a34ce0cf2cf5164843a60.pdf))]. The general goal is typically to quantify various soil/sediment components (particles, sand, water, roots) based on their densities; see sources citing Davey et al. (2011) for specific applications.
+
+CT scanning produces large matrices of metadata-rich files with the .dcm extension. The extension is derived from data standard used in CT scanning, called Digital Imaging and Communications in Medicine (DICOM). The **coreCT** package is a small but powerful set of functions designed to streamline analysis of CT-scanned sediment cores, enabling rapid programmatic processing and synthesis of semi-processed DICOM images. 'Semi-processed' means that irrelevant parts of the images (PVC core tubes, etc.) have been masked out, and the only remaining data are for the actual sediment. **coreCT** builds on functionality in other packages, particulary the **oro.dicom** package (Whitcher et al. 2011)^[Whitcher, B., V. J. Schmid and A. Thornton. 2011. Working with the DICOM and NIfTI Data Standards in R. Journal of Statistical Software 44(6): 1-28. 
+([link](http://www.jstatsoft.org/v44/i06))] for reading DICOM images and spatial analysis tools in the **raster** and **igraph** packages.
+
+Key features of **coreCT** include:
+
+- An integrated workflow, from conversion of DICOM files to image analysis
+- Internal calculation of the abundance (area, volume, wet mass) of seven sediment components: air, live roots and rhizomes, water, peat, particles, sand, and rock/shell
+- Quantification of root characteristics: external surface area, volume, and mass of roots in user-defined size classes
+
+This vignette introduces basic usage of the **coreCT** functions.
+
+## Data: core_426
+
+The <code>core_426</code> sample dataset included with **coreCT** includes three DICOM images from a CT-scanned sediment core. Each image represents a 0.625 mm depth interval, so this dataset is very small, but useful for demonstration purposes.
+
+We'll use this provided dataset to demonstrate how the basic functions <code>conv</code> and <code>rootSize</code> work. These basic functions work with a matrix of DICOM images, but **coreCT** also includes wrapper functions <code>convDir</code> and <code>rootSizeDir</code> that are more flexible, automatically extracting metadata and operating on a directory of raw .dcm files. These wrapper functions load the DICOM images, extract relevant metadata like pixel dimensions, and analyze the images for components and root characteristics.
+
+## Usage
+
+Using the basic functions requires some initial work to extract metadata and convert the raw values to Hounsfield Units, the standard units for CT output.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+library(coreCT)
+# extract metadata and convert raw values to Hounsfield Units
+ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
+ct.int   <- unique(extractHeader(core_426$hdr, "RescaleIntercept")) 
+HU_426 <- lapply(core_426$img, function(x) x*ct.slope + ct.int)
+
+# Use coreCT::conv to convert Hounsfield Units to densities and quantify component masses, volumes
+materials <- conv(HU_426, pixelA = voxDims("core_426")$pixelArea.mm2, thickness = voxDims("core_426")$thickness.mm)
+
+plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)", ylab = "Depth (cm)")
+```
+
+
+This can be done more easily with coreCT::convDir, which automatically extracts DICOM metadata associated with pixel dimensions and converts raw values to Hounsfield Units:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+materials <- convDir("core_426")
+
+plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)", ylab = "Depth (cm)")
+```
+
+The conversion from Hounsfield Units to densities is done using calibration rods of known density analyzed with the sediment core. Reasonable default values are provided for four calibrants following Davey et al. (2011): air, water, colloidal silica, and glass. <code>conv</code> internally develops a relationship between the Hounsfield units and known densities of these calibrants, and applies that relationship to derive estimates of component masses by multiplying bulk densities by volumes ($g.cm^3 * cm^3 = g$).
+
+Root characteristics are calculated by the <code>rootSize</code> function, which also has a wrapper function <code>rootSizeDir</code> that operates on a directory of raw DICOM images.
+
+By default, root characteristics are calculated when <code>convDir</code> is used, but if root data aren't of interest or a separate set of DICOM images is being used to quantify roots, time can be saved by including <code>rootData = FALSE</code> as an argument to <code>convDir</code>.
+
+Conversely, root characteristics can be analyzed without quantifying sediment composition. This uses the <code>rootSize</code> function and its metadata-scraping wrapper function, <code>rootSizeDir</code>:
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
+
+plot(-depth ~ structures, data = rootChars, xlab = "Root structures (per slice)", ylab = "Depth (cm)")
+```
+
