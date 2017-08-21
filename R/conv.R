@@ -1,8 +1,8 @@
 #' @title Convert a matrix of semi-processed DICOM images to mass and volume of material classes
 #'
-#' @description Calculates the mass, cross-sectional area, and volume of material classes for each CT slice.
+#' @description Converts raw CT units to material classes for each CT slice.
 #'
-#' @details Calculates the mass, cross-sectional area, and volume of material classes for each CT slice. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
+#' @details Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particles, sand, and rock/shell.
 #' 
 #' @usage conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 #' pixelA, thickness = 0.625, # all in mm 
@@ -68,8 +68,8 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                  glassHU = 1345.0696, glassSD = 45.4129,
                  waterHU = 63.912, waterSD = 14.1728,
                  densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
-) {
-  pb <- txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
+                 ) {
+  pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   voxelVol <- pixelA * thickness / 1e3 # cm3
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
@@ -80,7 +80,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                        upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
   
   densitydf <- data.frame(HU = c(airHU, waterHU, SiHU, glassHU), density = densities)
-  summary(lm1 <- lm(density ~ HU, data = densitydf)) # density in g/cm3
+  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
   
   for (i in 1:length(mat.list)) {
     depth <- thickness * i / 10 # cm
@@ -101,15 +101,15 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
       vol.output <- temp.output[, 1:8] * (thickness / 10) # cm3
       names(vol.output) <- gsub("2", "3", names(temp.output)[1:8])
       
-      wetMass <- (temp * coef(lm1)[2] + coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
+      wetMass <- (temp * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
       df1     <- data.frame(bin = bin, wetMass = wetMass, HU = temp)
-      test    <- aggregate(wetMass ~ bin, data = df1, sum)   # sum mass by category
+      test    <- stats::aggregate(wetMass ~ bin, data = df1, sum)   # sum mass by category
       test    <- base::merge(data.frame(bin = splits$material), test, all = TRUE)
       mass.output <- data.frame(t(as.vector(test[, 2])))
       mass.output[is.na(mass.output)] <- 0
       names(mass.output) <- paste0(test[, 1], ".g")
       
-      meanHUs <- aggregate(HU ~ bin, data = df1, mean)       # mean HU in each category
+      meanHUs <- stats::aggregate(HU ~ bin, data = df1, mean)       # mean HU in each category
       meanHUs <- base::merge(data.frame(bin = splits$material), meanHUs, all = TRUE)
       HU.output <- data.frame(t(as.vector(meanHUs[, 2])))
       # HU.output[is.na(HU.output)] <- 0 # leave as NA
@@ -130,7 +130,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
     } else {
       outDat <- outDat.init
     }
-    setTxtProgressBar(pb, i)
+    utils::setTxtProgressBar(pb, i)
   }
   outDat <- outDat[, c("depth", names(outDat)[!names(outDat) %in% "depth"])]
   outDat

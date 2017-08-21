@@ -26,7 +26,7 @@ voxDims <- function(directory = file.choose()) {
       # directory <- directory
     } else stop("Incorrect directory name: directory specified in a character string must end with a '/'; if 'file.choose()' is used, the selected file must be a dicom image")
     # load DICOMs, takes a couple minutes
-    fname   <- readDICOM(directory, verbose = TRUE) 
+    fname   <- oro.dicom::readDICOM(directory, verbose = TRUE) 
     
   } else if (exists(directory) & (sum(names(get(directory)) %in% c("hdr", "img")) == 2)){ # could have better error checking here
     fname <- get(directory)
@@ -34,7 +34,7 @@ voxDims <- function(directory = file.choose()) {
   
   # scrape some metadata
   pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
-  thick     <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  thick     <- unique(oro.dicom::extractHeader(fname$hdr, "SliceThickness"))
   
   returnDat <- data.frame(pixelArea.mm2 = pixelArea, thickness.mm = thick)
   returnDat

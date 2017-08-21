@@ -3,12 +3,12 @@
 \docType{data}
 \name{core_426}
 \alias{core_426}
-\title{Ninety-five CT scans from the top of a Spartina alterniflora core}
-\format{A list of 95 matrices, each with two elements: header and image data}
+\title{Three computed tomography scans from a Spartina alterniflora core}
+\format{A list of 3 matrices, each with two elements: header and image data}
 \usage{
 data(core_426)
 }
 \description{
-Ninety-five CT scans from the top of a Spartina alterniflora core
+Three computed tomography scans from a Spartina alterniflora core
 }
 \keyword{datasets}

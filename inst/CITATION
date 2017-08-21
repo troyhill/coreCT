@@ -8,8 +8,8 @@ bibentry("Manual",
          
          textVersion = 
          paste("Troy D. Hill and Earl Davey (2017). ", 
-               "Programmatic analysis of sediment cores using computed tomography imaging",
-               "Narragansett, RI",
+               "Programmatic analysis of sediment cores using computed tomography imaging. ",
+               "Narragansett, RI. ",
                "URL https://github.com/troyhill/coreCT",
                sep=""),
          

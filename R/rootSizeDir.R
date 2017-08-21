@@ -70,7 +70,7 @@ rootSizeDir <- function (directory = file.choose(),
       # directory <- directory # do nothing
     } else stop("Incorrect directory name: directory specified in a character string must end with a '/'; if 'file.choose()' is used, the selected file must be a dicom image")
     # load DICOMs, takes a couple minutes
-    fname   <- readDICOM(directory, verbose = TRUE) 
+    fname   <- oro.dicom::readDICOM(directory, verbose = TRUE) 
     
   } else if (exists(directory) & (sum(names(get(directory)) %in% c("hdr", "img")) == 2)){ # could have better error checking here
     fname <- get(directory)
@@ -79,11 +79,11 @@ rootSizeDir <- function (directory = file.choose(),
   # pixelArea <- voxDims(directory)$pixelArea.mm2
   # thick     <- voxDims(directory)$thickness.mm
   pixelArea <- as.numeric(strsplit(fname$hdr[[1]]$value[fname$hdr[[1]]$name %in% "PixelSpacing"], " ")[[1]][1])^2
-  thick <- unique(extractHeader(fname$hdr, "SliceThickness"))
+  thick <- unique(oro.dicom::extractHeader(fname$hdr, "SliceThickness"))
   
   # convert raw units to Hounsfield units
-  ct.slope <- unique(extractHeader(fname$hdr, "RescaleSlope"))
-  ct.int   <- unique(extractHeader(fname$hdr, "RescaleIntercept")) 
+  ct.slope <- unique(oro.dicom::extractHeader(fname$hdr, "RescaleSlope"))
+  ct.int   <- unique(oro.dicom::extractHeader(fname$hdr, "RescaleIntercept")) 
   HU <- lapply(fname$img, function(x) x*ct.slope + ct.int)
 
   # pass data to rootSize()

@@ -27,15 +27,15 @@ This vignette introduces basic usage of the **coreCT** functions.
 
 ## Data: core_426
 
-The <code>core_426</code> sample dataset included with **coreCT** includes three DICOM images from a CT-scanned sediment core. Each image represents a 0.625 mm depth interval, so this dataset is very small, but useful for demonstration purposes.
+The <code>core_426</code> sample dataset included with **coreCT** includes three DICOM images from a CT-scanned sediment core. Each image represents a 0.625 mm depth interval, so this dataset is very small and only useful for demonstration purposes. 
 
-We'll use this provided dataset to demonstrate how the basic functions <code>conv</code> and <code>rootSize</code> work. These basic functions work with a matrix of DICOM images, but **coreCT** also includes wrapper functions <code>convDir</code> and <code>rootSizeDir</code> that are more flexible, automatically extracting metadata and operating on a directory of raw .dcm files. These wrapper functions load the DICOM images, extract relevant metadata like pixel dimensions, and analyze the images for components and root characteristics.
+We'll use this provided dataset to demonstrate how the basic functions , <code>coreHist</code>, <code>conv</code>, and <code>rootSize</code> work. The latter two functions work with a matrix of DICOM images already in the working environment, but **coreCT** also includes wrapper functions <code>convDir</code> and <code>rootSizeDir</code> that are more flexible, operating on a directory of raw .dcm files and determining inputs like voxel volumes and slice thicknesses by automatically extracting metadata. These wrapper functions load the DICOM images, extract relevant metadata, and analyze the images for components and root characteristics.
 
-## Usage
+## Basic usage
 
 Using the basic functions requires some initial work to extract metadata and convert the raw values to Hounsfield Units, the standard units for CT output.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+```{r, message=FALSE, warning=FALSE, results = "hide"}
 library(coreCT)
 # extract metadata and convert raw values to Hounsfield Units
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
@@ -51,13 +51,33 @@ plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)",
 
 This can be done more easily with coreCT::convDir, which automatically extracts DICOM metadata associated with pixel dimensions and converts raw values to Hounsfield Units:
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+```{r, message=FALSE, warning=FALSE, results = "hide"}
 materials <- convDir("core_426")
 
 plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)", ylab = "Depth (cm)")
 ```
 
-The conversion from Hounsfield Units to densities is done using calibration rods of known density analyzed with the sediment core. Reasonable default values are provided for four calibrants following Davey et al. (2011): air, water, colloidal silica, and glass. <code>conv</code> internally develops a relationship between the Hounsfield units and known densities of these calibrants, and applies that relationship to derive estimates of component masses by multiplying bulk densities by volumes ($g.cm^3 * cm^3 = g$).
+
+## Examining component distributions
+ 
+The conversion from Hounsfield Units to particle densities is done using calibration rods of known density analyzed with the sediment core. Reasonable default values are provided for four calibrants following Davey et al. (2011): air, water, colloidal silica, and glass. These values are used to define thresholds between soil components. These thresholds, and the distribution of values in the whole data series, can be visualized and returned by <code>coreHist</code>:
+
+
+```{r, message=FALSE, warning=FALSE}
+HUfreq <- coreHist("core_426")
+
+names(HUfreq)
+HUfreq$splits
+```
+
+
+<code>conv</code> uses these calibration data to classify voxels into material classes and then calculate four quantities for each of the seven material classes, for each image: (1) average Hounsfield units, (2) total 2D surface area ($cm^2$), (3) volume ($cm^3$), and (4) mass (g). 
+
+The 2D surface area ($cm^2$) is calculated as simply the number of pixels in each class, multiplied by the pixel area. Multiplying 2D surface area by the image thickness provides the volume of each component (reported in $cm^3$). The relationship between calibration rod Hounsfield units and particle densities is then applied to estimate component masses, by multiplying each voxel's bulk density by its volume ($g.cm^3 * cm^3 = g$).
+
+
+## Focusing on roots and rhizomes
+
 
 Root characteristics are calculated by the <code>rootSize</code> function, which also has a wrapper function <code>rootSizeDir</code> that operates on a directory of raw DICOM images.
 
@@ -66,7 +86,7 @@ By default, root characteristics are calculated when <code>convDir</code> is use
 Conversely, root characteristics can be analyzed without quantifying sediment composition. This uses the <code>rootSize</code> function and its metadata-scraping wrapper function, <code>rootSizeDir</code>:
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results = "hide"}
+```{r, message=FALSE, warning=FALSE, results = "hide"}
 rootChars <- rootSizeDir("core_426", diameter.classes = c(1, 2.5, 10))
 
 plot(-depth ~ structures, data = rootChars, xlab = "Root structures (per slice)", ylab = "Depth (cm)")

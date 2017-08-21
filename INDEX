@@ -1,5 +1,6 @@
 conv                    Calculates the area and volume of material from a matrix of processed DICOM images
 convDir                 Calculates the area and volume of material from a directory of raw DICOM images
+coreHist                Whole-core frequency distribution of Hounsfield units
 getSurface              Remove artificial surface layers
 rootSize                Calculates root surface area from a matrix of processed DICOM images
 rootSizeDir             Calculates root surface area from a directory of raw DICOM images
