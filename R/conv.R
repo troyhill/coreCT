@@ -58,18 +58,14 @@
 #' 
 #' @export
 
-# TODO: add command like 
-# temp$bin <- cut(temp[(temp > lowerLim) & (temp < upperLim)], breaks = c(), labels = splits$material)
-# and summarize by category
 conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
-                 pixelA, thickness = 0.625, # all in mm
-                 airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
-                 SiHU = 271.7827, SiSD = 39.2814,
-                 glassHU = 1345.0696, glassSD = 45.4129,
-                 waterHU = 63.912, waterSD = 14.1728,
-                 densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
-                 ) {
-  pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
+                  pixelA, thickness = 0.625, # all in mm
+                  airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
+                  SiHU = 271.7827, SiSD = 39.2814,
+                  glassHU = 1345.0696, glassSD = 45.4129,
+                  waterHU = 63.912, waterSD = 14.1728,
+                  densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
+) {
   voxelVol <- pixelA * thickness / 1e3 # cm3
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
@@ -82,56 +78,53 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
   densitydf <- data.frame(HU = c(airHU, waterHU, SiHU, glassHU), density = densities)
   summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
   
-  for (i in 1:length(mat.list)) {
-    depth <- thickness * i / 10 # cm
-    temp <- as.vector(mat.list[[i]])
-    # convert from HU to g/cm3
-    # subset based on upper and lower limits (eclusive at lower end, inclusive at upper; see cut(right = TRUE) argument)
-    temp <- temp[(temp > lowerLim) & (temp <= upperLim)] 
-    if(length(temp) == 0) next ### added 20170328
-    bin <- base::cut(temp, breaks = c(splits$lower, upperLim), labels = splits$material, right = TRUE)
+  # start replace -----------------------------------------------------------
+  areaDat <- list()
+  volDat  <- list()
+  HU_Dat  <- list()
+  massDat <- list()
+  
+  pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
+  
+  for ( i in 1:length(mat.list)) {
+    test <- tabulate((mat.list[[i]] - lowerLim), nbins = upperLim - lowerLim + 1) #counts from mat.list = lowerLim:mat.list = upperLim
+    component.borders <- diff(unique(c(splits$lower, upperLim)))
+    area_output.int <- diff(c(0,
+                              sum(test[1:component.borders[1]]),
+                              sum(test[1:sum(component.borders[1:2])]),
+                              sum(test[1:sum(component.borders[1:3])]),
+                              sum(test[1:sum(component.borders[1:4])]),
+                              sum(test[1:sum(component.borders[1:5])]),
+                              sum(test[1:sum(component.borders[1:6])]),
+                              sum(test[1:sum(component.borders[1:7])])
+    ) * pixelA / 1e2)
     
-    # if (length(temp) > 0) {
-      temp.output.int <- table(bin) * pixelA / 1e2 # number of pixels * pixel area = area in class (cm2)
-      temp.output <- data.frame(t(as.vector(temp.output.int))) # cm2
-      names(temp.output) <- paste0(names(temp.output.int), ".cm2")
-      temp.output$tot.cm2 <- rowSums(temp.output[, 1:7])
-      temp.output$depth <- depth
-      
-      vol.output <- temp.output[, 1:8] * (thickness / 10) # cm3
-      names(vol.output) <- gsub("2", "3", names(temp.output)[1:8])
-      
-      wetMass <- (temp * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
-      df1     <- data.frame(bin = bin, wetMass = wetMass, HU = temp)
-      test    <- stats::aggregate(wetMass ~ bin, data = df1, sum)   # sum mass by category
-      test    <- base::merge(data.frame(bin = splits$material), test, all = TRUE)
-      mass.output <- data.frame(t(as.vector(test[, 2])))
-      mass.output[is.na(mass.output)] <- 0
-      names(mass.output) <- paste0(test[, 1], ".g")
-      
-      meanHUs <- stats::aggregate(HU ~ bin, data = df1, mean)       # mean HU in each category
-      meanHUs <- base::merge(data.frame(bin = splits$material), meanHUs, all = TRUE)
-      HU.output <- data.frame(t(as.vector(meanHUs[, 2])))
-      # HU.output[is.na(HU.output)] <- 0 # leave as NA
-      names(HU.output) <- paste0(meanHUs[, 1], ".HU")
-      
-      
-      outDat.init <- do.call(cbind, list(temp.output[, order(names(temp.output))], 
-                                         HU.output, # mean HU in each class
-                                         vol.output[, order(names(vol.output))], # volume of each class
-                                         mass.output)) # mass of each class
-    # } else {
-    #   outDat.init <- outDat[1, ]
-    #   outDat.init$depth <- depth
-    # }
+    areaDat[[i]]    <- area_output.int
+    volDat[[i]]     <- area_output.int * (thickness / 10)
+    HU_Dat[[i]]     <- tapply(mat.list[[i]], cut(mat.list[[i]], breaks = c(splits$lower, upperLim), right = TRUE, include.lowest = FALSE, labels = splits$material), mean)
     
-    if ((i > 1) & exists("outDat")) { 
-      outDat <- rbind(outDat, outDat.init)
-    } else {
-      outDat <- outDat.init
-    }
+    # wetMass     <- (mat.list[[i]] * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
+    # massDat[[i]]    <- tapply(wetMass, cut(wetMass, 
+    #                       breaks = c(c(splits$lower, upperLim) * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol,
+    #                       right = TRUE, include.lowest = FALSE, labels = splits$material),
+    #                       sum)
+    # could skip this by calculating as ((mean_HU * slope + coef) * voxelVol) * area_output.int (i.e., mean HU converted to density * voxel count)
+    massDat[[i]]    <- (HU_Dat[[i]] * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol * (area_output.int * thickness / 10)
     utils::setTxtProgressBar(pb, i)
   }
-  outDat <- outDat[, c("depth", names(outDat)[!names(outDat) %in% "depth"])]
-  outDat
-}
+  
+  HU_final     <- do.call(rbind, HU_Dat)
+  area_final   <- do.call(rbind, areaDat)
+  vols_final   <- do.call(rbind, volDat)
+  masses_final <- do.call(rbind, massDat)
+  
+  names(area_final)   <- paste0(names(HU_final), ".cm2")
+  names(vols_final)   <- paste0(names(HU_final), ".cm3")
+  names(masses_final) <- paste0(names(HU_final), ".g")
+  names(HU_Dat)     <- paste0(names(HU_final), ".HU")
+  outDat <- as.data.frame(do.call(cbind, list(1:length(mat.list) * thickness, HU_final, area_final, vols_final, masses_final) ))
+  names(outDat) <- c("depth", paste0(splits$material, c(".HU")), paste0(splits$material, c(".cm2")),
+                     paste0(splits$material, c(".cm3")),
+                     paste0(splits$material, c(".g")))
+  return(outDat)
+} 

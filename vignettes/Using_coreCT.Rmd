@@ -35,7 +35,7 @@ We'll use this provided dataset to demonstrate how the basic functions , <code>c
 
 Using the basic functions requires some initial work to extract metadata and convert the raw values to Hounsfield Units, the standard units for CT output.
 
-```{r, message=FALSE, warning=FALSE, results = "hide"}
+```{r, echo = FALSE, message=FALSE, warning=FALSE, results = "hide"}
 library(coreCT)
 # extract metadata and convert raw values to Hounsfield Units
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))
