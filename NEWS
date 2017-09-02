@@ -1,0 +1,6 @@
+coreCT version 1.2.1 (release date: 2017-09-02)
+==================
+
+Changes:
+* Added coreHist(), a function that returns and plots the frequency distribution of Hounsfield units in an image series
+* Efficiency improvements were made to conv()
