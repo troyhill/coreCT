@@ -7,7 +7,7 @@
 
 ### About coreCT
 
-**coreCT** is an R package for programmatic analysis of CT-scanned sediment cores, to rapidly convert Hounsfield Units to material classes (e.g., peat, root/rhizome, sand) and quantify their masses and volumes. To get started quickly, check out the package vignette: [(link)](https://github.com/troyhill/coreCT/blob/master/vignettes/Using_coreCT.Rmd "vignette: Using coreCT") that draws on the example data included with **coreCT**. 
+**coreCT** is an R package for programmatic analysis of CT-scanned sediment cores, to rapidly convert Hounsfield Units to material classes (e.g., peat, root/rhizome, sand) and quantify their masses and volumes. To get started quickly, check out the package vignette:
 
   - [vignette: 	Using the coreCT package](https://cran.r-project.org/web/packages/coreCT/vignettes/Using_coreCT.html)
 
