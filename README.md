@@ -18,7 +18,9 @@
 
 
 <img src="https://raw.githubusercontent.com/troyhill/images/master/221_20160607_Vol.png" width="400" height="500" />
-Figure 1. Volumes of various compartments in a sediment core
+**Figure 1.** Volumes of various compartments in a sediment core
+
+
 
 **coreCT** also quantifies the number of root/rhizome particles in a user-defined range of size classes, and calculates the external surface area and volume attributable to each size class. This allows the estimation of belowground plant organ contributions to total soil volume and, dividing by core area, elevation.
 
@@ -26,7 +28,7 @@ Figure 1. Volumes of various compartments in a sediment core
 <img src="https://raw.githubusercontent.com/troyhill/images/master/221_20160607_Particles.png" width="400" height="500" /> <img src="https://raw.githubusercontent.com/troyhill/images/master/221_20160607_rootVol.png" width="400" height="500" />
 
 
-Figure 2. Number (left) and combined volume (right) of root/rhizome particles in each of four size classes.
+**Figure 2.** Number (left) and combined volume (right) of root/rhizome particles in each of four size classes.
 
 
 ### Installing **coreCT**
