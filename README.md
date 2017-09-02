@@ -1,10 +1,18 @@
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT)
+
+
+
 # coreCT
 
 **coreCT** is an R package that streamlines analysis of sediment cores scanned using computed tomography (CT) imaging. 
 
 
+coreCT is available on CRAN and can be installed by running:
+    install.packages("coreCT") 
+    
 
-To install and load coreCT, run the following commands in R:
+To install and load the development version of coreCT, run the following commands in R:
 
     install.packages("devtools") # if devtools isn't already installed
 
