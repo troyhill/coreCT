@@ -2,7 +2,7 @@
 #'
 #' @description Converts raw CT units to material classes for each CT slice.
 #'
-#' @details Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particles, sand, and rock/shell.
+#' @details Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particulates, sand, and rock/shell.
 #' 
 #' @usage conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 #' pixelA, thickness = 0.625, # all in mm 
@@ -27,7 +27,7 @@
 #' @param waterSD standard deviation for water filled calibration rod
 #' @param densities numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)
 #' 
-#' @return value \code{conv} returns a dataframe with one row per CT slice. Values returned are the area and volume of 7 material classes: gas, peat, roots and rhizomes, rock and shell, fine mineral particles, sand, and water.
+#' @return value \code{conv} returns a dataframe with one row per CT slice. Values returned are the average Hounsfield Unit value, the area (cm2), volume (cm3), and mass (grams) of 7 material classes: gas, peat, roots and rhizomes, particulates, sand, water, and rock/shell. If <code>rootData = TRUE</code>, data for specified root size classes are also returned. See <code>rootSize</code> for more detail on those values.
 #' 
 #' @seealso \code{\link{rootSize}} operates similarly.
 #' 
@@ -70,7 +70,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
   # note: Earl adds 1 to switch between categories
-  splits <- data.frame(material = c("air",             "RR",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
+  splits <- data.frame(material = c("air",             "RR",                "water",         "peat",            "particulates",         "sand",                   "rock_shell"),
                        lower = c(round(lowerLim),      round(airHU + airSD), round(water.LB), round(water.UB),    round(SiHU + SiSD), 750,                      round(glassHU + glassSD)), 
                        #lower = c(round(lowerLim),        round(airHU+airSD) + 1, round(water.LB) + 1, round(water.UB) + 1,    round(SiHU + SiSD) + 1, 750 + 1,                      round(glassHU + glassSD) + 1), 
                        upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
@@ -122,9 +122,14 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
   names(vols_final)   <- paste0(names(HU_final), ".cm3")
   names(masses_final) <- paste0(names(HU_final), ".g")
   names(HU_Dat)     <- paste0(names(HU_final), ".HU")
-  outDat <- as.data.frame(do.call(cbind, list(1:length(mat.list) * thickness, HU_final, area_final, vols_final, masses_final) ))
+  outDat <- as.data.frame(do.call(cbind, list(1:length(mat.list) * thickness / 10, HU_final, area_final, vols_final, masses_final) ))
   names(outDat) <- c("depth", paste0(splits$material, c(".HU")), paste0(splits$material, c(".cm2")),
                      paste0(splits$material, c(".cm3")),
                      paste0(splits$material, c(".g")))
+  outDat$tot.cm2    <- base::rowSums(outDat[, grep(".cm2", names(outDat))], na.rm = TRUE)
+  outDat$tot.cm3    <- base::rowSums(outDat[, grep(".cm3", names(outDat))], na.rm = TRUE)
+  outDat$tot.g      <- base::rowSums(outDat[, grep(".g", names(outDat))], na.rm = TRUE)
+  # outDat$tot.meanHU <- base::rowSums(outDat[, grep(".HU", names(outDat))]) * 
+  
   return(outDat)
 } 
