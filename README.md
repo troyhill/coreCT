@@ -18,6 +18,8 @@
 
 
 <img src="https://raw.githubusercontent.com/troyhill/images/master/221_20160607_Vol.png" width="400" height="500" />
+
+
 **Figure 1.** Volumes of various compartments in a sediment core
 
 
@@ -29,6 +31,8 @@
 
 
 **Figure 2.** Number (left) and combined volume (right) of root/rhizome particles in each of four size classes.
+
+
 
 
 ### Installing **coreCT**
