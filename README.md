@@ -5,7 +5,7 @@
 
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT)
 
-
+[![](http://cranlogs.r-pkg.org/badges/coreCT)](http://cran.rstudio.com/web/packages/coreCT/index.html)
 
 
 
