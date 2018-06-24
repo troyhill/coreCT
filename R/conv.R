@@ -97,10 +97,10 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                               sum(test[1:sum(component.borders[1:5])]),
                               sum(test[1:sum(component.borders[1:6])]),
                               sum(test[1:sum(component.borders[1:7])])
-    ) * pixelA / 1e2)
+    ) * pixelA / 1e2) # area of each category - cm2
     
     areaDat[[i]]    <- area_output.int
-    volDat[[i]]     <- area_output.int * (thickness / 10)
+    volDat[[i]]     <- area_output.int * (thickness / 10) # cm3
     HU_Dat[[i]]     <- tapply(mat.list[[i]], cut(mat.list[[i]], breaks = c(splits$lower, upperLim), right = TRUE, include.lowest = FALSE, labels = splits$material), mean)
     
     # wetMass     <- (mat.list[[i]] * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol  # convert to g/cm3 and then to g (wet) in each pixel
@@ -109,7 +109,7 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
     #                       right = TRUE, include.lowest = FALSE, labels = splits$material),
     #                       sum)
     # could skip this by calculating as ((mean_HU * slope + coef) * voxelVol) * area_output.int (i.e., mean HU converted to density * voxel count)
-    massDat[[i]]    <- (HU_Dat[[i]] * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * voxelVol * (area_output.int * thickness / 10)
+    massDat[[i]]    <- (HU_Dat[[i]] * stats::coef(lm1)[2] + stats::coef(lm1)[1]) * volDat[[i]] # * voxelVol * (area_output.int * thickness / 10)
     utils::setTxtProgressBar(pb, i)
   }
   
