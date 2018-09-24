@@ -1,8 +1,4 @@
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT)
-
-
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT)
-
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT) [![](http://cranlogs.r-pkg.org/badges/grand-total/coreCT)](https://cran.r-project.org/package=coreCT)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.889651.svg)](https://doi.org/10.5281/zenodo.889651)
 
