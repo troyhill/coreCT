@@ -1,8 +1,11 @@
+# coreCT
+
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT) [![](http://cranlogs.r-pkg.org/badges/grand-total/coreCT)](https://cran.r-project.org/package=coreCT) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.889651.svg)](https://doi.org/10.5281/zenodo.889651)
 
+  
+    
 
-
-### Installing **coreCT**
+## Installing **coreCT**
 
 **coreCT** is available on CRAN and can be installed from the R console:
 
@@ -20,15 +23,15 @@ Once installed, the package can be loaded:
     
     library(coreCT)
 
+  
+  
 
-
-
-### About **coreCT**
+## About **coreCT**
 
 **coreCT** is an [R package](https://cran.r-project.org/package=coreCT) for programmatic analysis of sediment cores that have been digitized by computed tomography. The package converts Hounsfield Units to material classes (e.g., peat, root/rhizome, sand) and quantifies component masses and volumes. To get started quickly, check out the package vignette.
 
 
-### Sediment core characterization
+## Sediment core characterization
 
 **coreCT** output can be easily plotted using the **reshape2** and **ggplot2** packages (figures below were produced using the same code included in the help file examples).
 
