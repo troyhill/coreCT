@@ -1,6 +1,28 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT) [![](http://cranlogs.r-pkg.org/badges/grand-total/coreCT)](https://cran.r-project.org/package=coreCT) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.889651.svg)](https://doi.org/10.5281/zenodo.889651)
 
 
+
+### Installing **coreCT**
+
+**coreCT** is available on CRAN and can be installed from the R console:
+
+    install.packages("coreCT") 
+    
+
+To install and load the development version of coreCT:
+
+    install.packages("devtools") # if devtools isn't already installed
+
+    devtools::install_github("troyhill/coreCT")
+
+
+Once installed, the package can be loaded:
+    
+    library(coreCT)
+
+
+
+
 ### About **coreCT**
 
 **coreCT** is an [R package](https://cran.r-project.org/package=coreCT) for programmatic analysis of sediment cores that have been digitized by computed tomography. The package converts Hounsfield Units to material classes (e.g., peat, root/rhizome, sand) and quantifies component masses and volumes. To get started quickly, check out the package vignette.
@@ -27,25 +49,6 @@
 **Figure 2.** Number (left) and combined volume (right) of root/rhizome particles in each of four size classes.
 
 
-
-
-### Installing **coreCT**
-
-**coreCT** is available on CRAN and can be installed from the R console:
-
-    install.packages("coreCT") 
-    
-
-To install and load the development version of coreCT:
-
-    install.packages("devtools") # if devtools isn't already installed
-
-    devtools::install_github("troyhill/coreCT")
-
-
-Once installed, the package can be loaded:
-    
-    library(coreCT)
 
 
 
