@@ -12,12 +12,6 @@
     install.packages("coreCT") 
     
 
-To install and load the development version of coreCT:
-
-    install.packages("devtools") # if devtools isn't already installed
-
-    devtools::install_github("troyhill/coreCT")
-
 
 Once installed, the package can be loaded:
     
