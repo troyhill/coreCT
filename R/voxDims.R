@@ -22,7 +22,7 @@ voxDims <- function(directory = file.choose()) {
     
     if (substr(directory, nchar(directory) - 3, nchar(directory)) %in% ".dcm") {
       #directory <- dirname(directory)
-    } else if (grep("/", directory) == 1) { # dangerously assumes that if there's a forward slash, it's a valid address
+    } else if (grepl("/", directory) == 1) { # dangerously assumes that if there's a forward slash, it's a valid address
       # directory <- directory
     } else stop("Incorrect directory name: directory specified in a character string must end with a '/'; if 'file.choose()' is used, the selected file must be a dicom image")
     # load DICOMs, takes a couple minutes
