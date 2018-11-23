@@ -14,7 +14,6 @@ test_that("coreHist gives correct output", {
   expect_equal(length(coreHist(directory = "core_426", units = "monkeys")), 2)
   expect_error(coreHist(directory = "RDATA"))
   expect_error(coreHist(directory = "RDATA.dcm"))
-  expect_error(coreHist(directory = "RDATA.dcm")) 
   expect_error(coreHist(directory = names(core_426))) # tough error message to trigger!
 })
 
