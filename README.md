@@ -1,7 +1,7 @@
 # coreCT
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/coreCT)](https://cran.r-project.org/package=coreCT) [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/coreCT)](https://cran.r-project.org/package=coreCT) [![](http://cranlogs.r-pkg.org/badges/grand-total/coreCT)](https://cran.r-project.org/package=coreCT) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.889651.svg)](https://doi.org/10.5281/zenodo.889651) 
-[![Build Status](https://travis-ci.org/troyhill/coreCT.svg?branch=master)](https://travis-ci.org/troyhill/coreCT) [![codecov.io](https://codecov.io/github/troyhill/coreCT/coverage.svg?branch=master)](https://codecov.io/github/troyhill/coreCT?branch=master)
+[![Build Status](https://travis-ci.org/troyhill/coreCT.svg?branch=master)](https://travis-ci.org/troyhill/coreCT) [![codecov.io](https://codecov.io/github/troyhill/coreCT/coverage.svg?branch=master)](https://codecov.io/github/troyhill/coreCT?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/troyhill/coreCT?branch=master&svg=true)](https://ci.appveyor.com/project/troyhill/coreCT) 
 
   
     
