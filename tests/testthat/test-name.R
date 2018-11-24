@@ -10,7 +10,7 @@ test_that("voxDims gives correct output", {
 })
 
 test_that("coreHist gives correct output", {
-  expect_equal(length(coreHist(directory = "core_426", units = "percent")), 2)
+  expect_equal(length(coreHist(directory = "core_426", units = "percent"), pngName = paste0(tempdir(), ".png")), 2)
   expect_equal(length(coreHist(directory = "core_426", units = "monkeys")), 2)
   expect_error(coreHist(directory = "RDATA"))
   expect_error(coreHist(directory = "RDATA.dcm"))
