@@ -50,6 +50,6 @@ test_that("getSurface test", {
   expect_equal(nrow(getSurface(a <- conv(core_426$img, pixelA = 0.0596), material = "peat", threshold = 1)), 3)
   expect_equal(nrow(getSurface(a <- conv(core_426$img, pixelA = 0.0596), material = "peat", threshold = 0.003)), 1)
   expect_equal(nrow(getSurface(a <- conv(core_426$img, pixelA = 0.0596), material = "peat", threshold = 1, start = "both")), 3)
+  expect_equal(nrow(getSurface(a <- conv(core_426$img, pixelA = 0.0596), material = "rock_shell", threshold = 1, start = "bottom")), 2)
 })
-a <- conv(core_426$img, pixelA = 0.0596)
-getSurface(a, material = "peat", threshold = 1, start = "both")
+
