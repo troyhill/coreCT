@@ -24,16 +24,22 @@ test_that("rootSize test", {
 
 test_that("rootSizeDir test", {
   expect_equal(nrow(rootSizeDir("core_426", diameter.classes = c(2.5, 10))), 3)
-  expect_error(voxDims(directory = "RDATA"))
-  expect_error(voxDims(directory = "RDATA.dcm"))
-  expect_error(voxDims(directory = "RDATA.dcm")) 
-  expect_error(voxDims(directory = names(core_426))) 
+  expect_error(rootSizeDir(directory = "RDATA"))
+  expect_error(rootSizeDir(directory = "RDATA.dcm"))
+  expect_error(rootSizeDir(directory = "RDATA.dcm")) 
+  expect_error(rootSizeDir(directory = names(core_426))) 
 })
 
-# test_that("fld.frq gives correct output", {
-#   expect_equal(fld.frq(2, 1:10, units = "percent"), 0.8)
-#   expect_equal(fld.frq(2, 1:10, units = "tides"), 9)
-#   expect_error(fld.frq("string", 1:10)) 
-#   expect_error(fld.frq(2, "string"))
-#   expect_error(fld.frq(2, 1:10, units = "furlongs")) 
-# })
+
+test_that("conv test", {
+  expect_equal(nrow(conv(core_426$img, pixelA = 0.0596)), 3)
+})
+
+test_that("convDir test", {
+  expect_equal(nrow(convDir("core_426", diameter.classes = c(2.5, 10))), 3)
+  expect_equal(nrow(convDir("core_426", diameter.classes = c(2.5, 10), rootData = FALSE)), 3)
+  expect_error(convDir(directory = "RDATA"))
+  expect_error(convDir(directory = "RDATA.dcm"))
+  expect_error(convDir(directory = "RDATA.dcm")) 
+  expect_error(convDir(directory = names(core_426))) 
+})
