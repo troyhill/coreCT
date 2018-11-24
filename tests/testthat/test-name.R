@@ -42,7 +42,7 @@ test_that("convDir test", {
   expect_equal(nrow(convDir("core_426", diameter.classes = c(2.5, 10), rootData = FALSE)), 3)
   expect_error(convDir(directory = "RDATA"))
   expect_error(convDir(directory = "RDATA.dcm"))
-  expect_error(convDir(directory = "RDATA.dcm")) 
+  expect_error(convDir(directory = tempdir())) 
   expect_error(convDir(directory = names(core_426))) 
 })
 
