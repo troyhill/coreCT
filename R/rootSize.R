@@ -132,7 +132,7 @@ rootSize <- function (mat.list, pixelA,
     } else if (sum(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
       for (j in 2:length(diams)) {
         outDatInt <- data.frame(particles = 0, surfArea = 0) #,surfaceVol = 0)
-        names(outDatInt) <- paste0(names(outDatInt2), ".", diams[j - 1], "_", diams[j], "mm")
+        names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
         if (j == 2) {
           outDatInt2 <- outDatInt 
         } else {

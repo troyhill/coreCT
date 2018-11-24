@@ -19,7 +19,7 @@ test_that("coreHist gives correct output", {
 
 test_that("rootSize test", {
   expect_equal(sum(rootSize(core_426$img, pixelA = 0.0596, waterHU = 663.912)[, 2]), 43)
-  expect_equal(nrow(rootSize(core_426$img, pixelA = 0.0596)), 3)
+  expect_equal(nrow(rootSize(mat.list = core_426$img, pixelA = 0.0596)), 3)
 })
 
 
