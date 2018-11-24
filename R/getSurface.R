@@ -33,7 +33,7 @@
 #' @export
 
 
-getSurface <- function (x, material = "particles", threshold = 0.40, start = "top", thickness = 0.625) {
+getSurface <- function (x, material = "particulates", threshold = 0.40, start = "top", thickness = 0.625) {
   # function identifies/removes areas at one end of the core (set by "start") exceeding a
   # threshold proportion of material (e.g., 75% particles, sand, etc.)
   x2 <- x
@@ -47,11 +47,12 @@ getSurface <- function (x, material = "particles", threshold = 0.40, start = "to
     } else x2 <- x
   }
   if (start %in% c("bottom", "both")) {
-    x2 <- x2[-order(x2[, "depth"]), ]
+    x2 <- x2[rev(row.names(x2)), ] # invert the data
     temp <- (x2[, paste0(material, ".cm2")] / x$tot.cm2) > threshold
     if (temp[1]) { # if first value exceeds threshold
       rle.temp <- rle(temp)
       x2 <- x[-c(1:rle.temp$lengths[1]), ]
+      x2 <- x2[rev(row.names(x2)), ] # un-invert the data
       x2$depth <- 1:nrow(x2) * thickness / 10
       rownames(x2) <-  1:nrow(x2)
     } else x2 <- x
