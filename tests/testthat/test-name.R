@@ -27,7 +27,7 @@ test_that("rootSizeDir test", {
   expect_equal(nrow(rootSizeDir("core_426", diameter.classes = c(2.5, 10))), 3)
   expect_error(rootSizeDir(directory = "RDATA"))
   expect_error(rootSizeDir(directory = "RDATA.dcm"))
-  expect_error(rootSizeDir(directory = "RDATA.dcm")) 
+  expect_error(rootSizeDir(directory = tempdir())) 
   expect_error(rootSizeDir(directory = names(core_426))) 
 })
 
