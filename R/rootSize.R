@@ -91,7 +91,7 @@ rootSize <- function (mat.list, pixelA,
     temp[!temp == 1] <- NA # make sure only two values exist: 1, NA
     if(length(temp) == 0) next 
     
-    if (length(!is.na(temp)) > 0) {
+    if (sum(!is.na(temp)) > 0) {
       rmat <- raster::raster(temp)
       rmat.int <- raster::clump(rmat, directions = 8, gaps = FALSE)
       clump.sub1 <- data.frame(freq(rmat.int))
@@ -129,7 +129,7 @@ rootSize <- function (mat.list, pixelA,
           outDatInt2 <- cbind(outDatInt2, outDatInt)
         }
       }
-    } else if (length(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
+    } else if (sum(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
       for (j in 2:length(diams)) {
         outDatInt <- data.frame(particles = 0, surfArea = 0) #,surfaceVol = 0)
         names(outDatInt) <- paste0(names(outDatInt2), ".", diams[j - 1], "_", diams[j], "mm")
