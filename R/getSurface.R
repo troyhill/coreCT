@@ -4,7 +4,7 @@
 #'
 #' @details Identifies and removes artificial surface layers from processed CT data. Areas can be removed from one or both ends of the core (set by \code{start}), based on exceeding a \code{threshold} proportion of material (e.g., 75% particles, sand, etc.)
 #' 
-#' @usage getSurface(x, material = "particles", threshold = 0.40, start = "top", thickness = 0.625)
+#' @usage getSurface(x, material = "particulates", threshold = 0.40, start = "top", thickness = 0.625)
 #' 
 #' @param x dataframe created by \code{conv}
 #' @param material material used for determining where the surface begins

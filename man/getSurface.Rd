@@ -4,7 +4,7 @@
 \alias{getSurface}
 \title{Remove artificial surface layers from processed CT data}
 \usage{
-getSurface(x, material = "particles", threshold = 0.40, start = "top", thickness = 0.625)
+getSurface(x, material = "particulates", threshold = 0.40, start = "top", thickness = 0.625)
 }
 \arguments{
 \item{x}{dataframe created by \code{conv}}
