@@ -2,30 +2,22 @@
 #'
 #' @description Converts raw CT units to material classes for each CT slice.
 #'
-#' @details Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particulates, sand, and rock/shell.
+#' @details Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particulates, sand, and rock/shell. The input style for calibration rods ensures sediment components are partitioned following the density divisions in Davey et al. 2011. Calibration rods and are used to develop the calibration curve. Separately, the densities used for partitioning in Davey et al. 2011 (0.0012, 1, 1.23, 2.2 g/cm3) are converted to Hounsfield Units and used for partitioning sediment components. The standard deviation for the calibration rod nearest to the target value is used for the standard deviation for the division between two sediment components.
 #' 
 #' @usage conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 #' pixelA, thickness = 0.625, # all in mm 
-#' airHU = -850.3233, airSD = 77.6953, 
-#' SiHU = 271.7827, SiSD = 39.2814,
-#' glassHU = 1345.0696, glassSD = 45.4129,
-#' waterHU = 63.912, waterSD = 14.1728,
+#' means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
+#' sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
 #' densities = c(0.0012, 1, 1.23, 2.2))
 #' 
 #' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units)
 #' @param pixelA pixel area (mm2)
-#' @param thickness CT image thickness (mm)
-#' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
-#' @param airSD standard deviation for air-filled calibration rod
-#' @param SiHU mean value for colloidal silica calibration rod 
-#' @param SiSD standard deviation for colloidal Si calibration rod
-#' @param glassHU mean value for glass calibration rod
-#' @param glassSD standard deviation for glass calibration rod
-#' @param waterHU mean value for water filled calibration rod
-#' @param waterSD standard deviation for water filled calibration rod
-#' @param densities numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)
+#' @param thickness slice thickness for computed tomography image series (mm)
+#' @param means mean values (units = Hounsfield Units) for calibration rods used.
+#' @param sds standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.
+#' @param densities numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.
 #' 
 #' @return value \code{conv} returns a dataframe with one row per CT slice. Values returned are the average Hounsfield Unit value, the area (cm2), volume (cm3), and mass (grams) of 7 material classes: gas, peat, roots and rhizomes, particulates, sand, water, and rock/shell. If <code>rootData = TRUE</code>, data for specified root size classes are also returned. See <code>rootSize</code> for more detail on those values.
 #' 
@@ -53,6 +45,7 @@
 #' @importFrom stats aggregate
 #' @importFrom stats coef
 #' @importFrom stats lm
+#' @importFrom stats predict
 #' @importFrom oro.dicom extractHeader
 #' @importFrom oro.dicom readDICOM
 #' 
@@ -60,13 +53,45 @@
 
 conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                   pixelA, thickness = 0.625, # all in mm
-                  airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
-                  SiHU = 271.7827, SiSD = 39.2814,
-                  glassHU = 1345.0696, glassSD = 45.4129,
-                  waterHU = 63.912, waterSD = 14.1728,
-                  densities = c(0.0012, 1, 1.23, 2.2) # format = air, water, Si, glass
+                  means     = c(-850.3233, 63.912, 271.7827, 1345.0696),  # all cal rod units are in Hounsfield Units
+                  sds       = c(77.6953, 14.1728, 39.2814, 45.4129),  # in same order as means. units are in Hounsfield Units
+                  densities = c(0.0012, 1, 1.23, 2.2) # must be in the same order as the means and SDs. units are g/cm3
 ) {
   voxelVol <- pixelA * thickness / 1e3 # cm3
+  
+  
+  
+  ##### section added 20190922 to separate calibration curve from component partitioning
+  densitydf <- data.frame(HU = means, density = densities)
+  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
+  if (summary(lm1)$r.squared < 0.95) { # print message to console if r2 < 0.95 
+    message(cat("\n Note: Calibration curve has limited explanatory power; r2 = ", round(summary(lm1)$r.squared, 3), "\n"))
+  }
+  densToHU <- stats::lm(HU ~ density, data = densitydf)
+  
+  partition.means <- stats::predict(densToHU, newdata = data.frame(density = c(0.0012, 1, 1.23, 2.2))) # this is hard-coded to reflect partitioning in Davey et al. 2011
+  
+  air.proxy   <- which.min(abs(means - partition.means[1])) # which element to use for air SD?
+  water.proxy <- which.min(abs(means - partition.means[2])) # which element to use for water SD?
+  Si.proxy    <- which.min(abs(means - partition.means[3])) # which element to use for Si SD?
+  glass.proxy <- which.min(abs(means - partition.means[4])) # which element to use for glass SD?
+  
+  partition.sds   <- c(sds[c(air.proxy, water.proxy, Si.proxy, glass.proxy)])
+  
+  ### now, set means and SDs used for partitioning
+  airHU      <- partition.means[1]
+  airSD      <- partition.sds[1]
+  waterHU    <- partition.means[2]
+  waterSD    <- partition.sds[2]
+  SiHU       <- partition.means[3]
+  SiSD       <- partition.sds[3]
+  glassHU    <- partition.means[4]
+  glassSD    <- partition.sds[4]
+  ##### end section added 20190922
+  
+  
+  
+  ### now calculate borders between sediment components based on density targets; irrespective of calibrants
   water.LB <- waterHU - waterSD
   water.UB <- waterHU + waterSD
   # note: Earl adds 1 to switch between categories
@@ -74,9 +99,6 @@ conv <- function(mat.list, upperLim = 3045, lowerLim = -1025,
                        lower = c(round(lowerLim),      round(airHU + airSD), round(water.LB), round(water.UB),    round(SiHU + SiSD), 750,                      round(glassHU + glassSD)), 
                        #lower = c(round(lowerLim),        round(airHU+airSD) + 1, round(water.LB) + 1, round(water.UB) + 1,    round(SiHU + SiSD) + 1, 750 + 1,                      round(glassHU + glassSD) + 1), 
                        upper = c(round(airHU + airSD), round(water.LB),      round(water.UB), round(SiHU + SiSD), 750,                round(glassHU + glassSD), round(upperLim)))
-  
-  densitydf <- data.frame(HU = c(airHU, waterHU, SiHU, glassHU), density = densities)
-  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
   
   # start replace -----------------------------------------------------------
   areaDat <- list()

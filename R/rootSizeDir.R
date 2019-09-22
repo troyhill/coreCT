@@ -4,21 +4,20 @@
 #'
 #' @details Calculates the number of root/rhizome particles and surface areas, for different size classes. Unlike \code{\link{rootSize}}, \code{\link{rootSizeDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
-#' @usage rootSizeDir(directory = file.choose(), diameter.classes = c(1, 2, 5, 10, 20),
+#' @usage rootSizeDir(directory = file.choose(), 
+#' diameter.classes = c(1, 2, 5, 10, 20),
 #' class.names = diameter.classes,
-#' airHU = -850.3233,
-#' airSD = 77.6953,
-#' waterHU = 63.912,
-#' waterSD = 14.1728,
+#' means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
+#' sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
+#' densities = c(0.0012, 1, 1.23, 2.2),
 #' pixel.minimum = 1)
 #' 
 #' @param directory a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.
 #' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
-#' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
-#' @param airSD standard deviation for air-filled calibration rod
-#' @param waterHU mean value for water-filled calibration rod
-#' @param waterSD standard deviation for water-filled calibration rod
+#' @param means mean values (units = Hounsfield Units) for calibration rods used.
+#' @param sds standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.
+#' @param densities numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.
 #' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
 #' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number, volume (cm3), and surface area (cm2) of particles in each size class with an upper bound defined in \code{diameter.classes}.
@@ -57,10 +56,9 @@
 rootSizeDir <- function (directory = file.choose(), 
                         diameter.classes = c(1, 2, 5, 10, 20), # mm, targets clumps less than or equal to "diameter" argument
                         class.names = diameter.classes,
-                        airHU = -850.3233, # Hounsfield Units
-                        airSD = 77.6953,
-                        waterHU = 63.912,
-                        waterSD = 14.1728,
+                        means     = c(-850.3233, 63.912, 271.7827, 1345.0696),  # all cal rod units are in Hounsfield Units
+                        sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
+                        densities = c(0.0012, 1, 1.23, 2.2),
                         pixel.minimum = 1) {
   if (!exists(directory)) { # is "directory" an existing object (user-loaded DICOM matrix)
     
@@ -88,7 +86,10 @@ rootSizeDir <- function (directory = file.choose(),
 
   # pass data to rootSize()
   returnDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
-                        diameter.classes, class.names, airHU, airSD, waterHU, waterSD,
+                        diameter.classes = diameter.classes, class.names = class.names,
+                        means     = means,  # all cal rod units are in Hounsfield Units
+                        sds       = sds,  # in same order as means. units are in Hounsfield Units
+                        densities = densities,
                         pixel.minimum = pixel.minimum)
   
   returnDat

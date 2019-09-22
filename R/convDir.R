@@ -5,10 +5,8 @@
 #' @details Calculates the area and volume of material classes for each CT slice in a directory. Unlike \code{\link{conv}}, \code{\link{convDir}} accepts a folder of raw values and makes the conversion to Hounsfield Units using the metadata associated with the DICOM images.
 #' 
 #' @usage convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1025, 
-#' airHU = -850.3233, airSD = 77.6953, 
-#' SiHU = 271.7827, SiSD = 39.2814,
-#' glassHU = 1345.0696, glassSD = 45.4129,
-#' waterHU = 63.912, waterSD = 14.1728,
+#' means     = c(-850.3233, 63.912, 271.7827, 1345.0696), 
+#' sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
 #' densities = c(0.0012, 1, 1.23, 2.2),
 #' rootData = TRUE, 
 #' diameter.classes = c(1, 2, 2.5, 10), 
@@ -18,14 +16,8 @@
 #' @param directory a character string that can be a matrix of DICOM images or the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units)
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units)
-#' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
-#' @param airSD standard deviation for air-filled calibration rod
-#' @param SiHU mean value for colloidal silica calibration rod 
-#' @param SiSD standard deviation for colloidal Si calibration rod
-#' @param glassHU mean value for glass calibration rod
-#' @param glassSD standard deviation for glass calibration rod
-#' @param waterHU mean value for water filled calibration rod
-#' @param waterSD standard deviation for water filled calibration rod
+#' @param means mean values (units = Hounsfield Units) for calibration rods used.
+#' @param sds standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.
 #' @param densities numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)
 #' @param rootData if TRUE, \code{rootSize} is also called on the matrix
 #' @param diameter.classes if rootData is TRUE, this argument provides an integer vector of diameter cut points used by \code{rootSize}. Units are mm (zero is added in automatically).
@@ -65,11 +57,9 @@
 # and summarize by category
 convDir <- function(directory = file.choose(), 
                  upperLim = 3045, lowerLim = -1025,
-                 airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
-                 SiHU = 271.7827, SiSD = 39.2814,
-                 glassHU = 1345.0696, glassSD = 45.4129,
-                 waterHU = 63.912, waterSD = 14.1728,
-                 densities = c(0.0012, 1, 1.23, 2.2), # format = air, water, Si, glass
+                 means     = c(-850.3233, 63.912, 271.7827, 1345.0696),  # all cal rod units are in Hounsfield Units
+                 sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
+                 densities = c(0.0012, 1, 1.23, 2.2),
                  rootData = TRUE, diameter.classes = c(1, 2, 2.5, 10), 
                  class.names = diameter.classes,
                  pixel.minimum = 4
@@ -101,16 +91,14 @@ convDir <- function(directory = file.choose(),
   # pass data to conv()
   returnDat <- conv(mat.list = HU, pixelA = pixelArea, thickness = thick,
                          upperLim = upperLim, lowerLim = lowerLim,
-                         airHU = airHU, airSD = airSD, 
-                         waterHU = waterHU, waterSD = waterSD,
-                         SiHU = SiHU, SiSD = SiSD,
-                         glassHU = glassHU, glassSD = glassSD,
+                         means     = means,
+                         sds       = sds,
                          densities = densities)
   if (rootData == TRUE) {
     rootsDat <- rootSize(mat.list = HU, pixelA = pixelArea, thickness = thick, 
                          diameter.classes = diameter.classes, class.names = diameter.classes, 
-                         airHU = airHU, airSD = airSD, 
-                         waterHU = waterHU, waterSD = waterSD,
+                         means     = means,
+                         sds       = sds,
                          pixel.minimum = pixel.minimum)
     # returnDat <- cbind(returnDat, rootsDat)
     returnDat <- plyr::join_all(list(returnDat, rootsDat), by = "depth")

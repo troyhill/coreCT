@@ -1,3 +1,13 @@
+coreCT version 1.3.0 (release date: 2019-09-22)
+==================
+
+Changes:
+* calibration curve for converting Hounsfield Units to densities now accommodates more than four calibrants
+* input style for calibration rods has changed to ensure sediment components are partitioned following the density divisions in Davey et al. 2011. Calibration rods and are used to develop the calibration curve. Separately, the densities used for partitioning in Davey et al. 2011 (0.0012, 1, 1.23, 2.2 g/cm3) are converted to Hounsfield Units and used for partitioning sediment components.
+* calibration curve summary is reported to console if r2 < 0.95. 
+
+
+
 coreCT version 1.2.4 (release date: 2019-01-03)
 ==================
 

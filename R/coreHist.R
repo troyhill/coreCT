@@ -5,24 +5,18 @@
 #' @usage coreHist(directory = file.choose(), 
 #' units = "percent",
 #' upperLim = 3045, lowerLim = -1025,
-#' airHU = -850.3233, airSD = 77.6953,
-#' SiHU = 271.7827, SiSD = 39.2814,
-#' glassHU = 1345.0696, glassSD = 45.4129,
-#' waterHU = 63.912, waterSD = 14.1728,
+#' means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
+#' sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
+#' densities = c(0.0012, 1, 1.23, 2.2),
 #' returnData = TRUE, pngName = NULL)
 #' 
 #' @param directory a character string that can be (1) a matrix of DICOM images that exists in the global environment, or (2) the address of an individual DICOM file in a folder of DICOM images. The default action is <code>file.choose()</code>; a browser menu appears so the user can select the the desired directory by identifying a single DICOM file in the folder of images.
 #' @param units units to be used for plotting purposes: either "percent" (the default) or "absolute"
 #' @param upperLim upper bound cutoff for pixels (Hounsfield Units); upper bound is inclusive
 #' @param lowerLim lower bound cutoff for pixels (Hounsfield Units); lower bound is exclusive
-#' @param airHU mean value for air-filled calibration rod (Hounsfield Units)
-#' @param airSD standard deviation for air-filled calibration rod
-#' @param SiHU mean value for colloidal silica calibration rod 
-#' @param SiSD standard deviation for colloidal Si calibration rod
-#' @param glassHU mean value for glass calibration rod
-#' @param glassSD standard deviation for glass calibration rod
-#' @param waterHU mean value for water filled calibration rod
-#' @param waterSD standard deviation for water filled calibration rod
+#' @param means mean values (units = Hounsfield Units) for calibration rods used.
+#' @param sds standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.
+#' @param densities numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.
 #' @param returnData if \code{TRUE}, voxel counts for each Hounsfield unit from \code{lowerLim} to \code{upperLim} are returned, as are material class definitions. These are the data needed to re-create and modify the frequency plot.
 #' @param pngName if this is not \code{NULL}, the frequency plot is saved to disk. In that case, \code{pngName} should be a character string containing the name and address of the file. 
 #' 
@@ -40,16 +34,16 @@
 #' @importFrom graphics abline
 #' @importFrom graphics text
 #' @importFrom graphics par
+#' @importFrom stats predict
 #' 
 #' @export
 
 coreHist <- function(directory = file.choose(), 
                      units = "percent",
                      upperLim = 3045, lowerLim = -1025,
-                     airHU = -850.3233, airSD = 77.6953, # all cal rod arguments are in Hounsfield Units
-                     SiHU = 271.7827, SiSD = 39.2814,
-                     glassHU = 1345.0696, glassSD = 45.4129,
-                     waterHU = 63.912, waterSD = 14.1728,
+                     means     = c(-850.3233, 63.912, 271.7827, 1345.0696),  # all cal rod units are in Hounsfield Units
+                     sds       = c(77.6953, 14.1728, 39.2814, 45.4129),  # in same order as means. units are in Hounsfield Units
+                     densities = c(0.0012, 1, 1.23, 2.2), # must be in the same order as the means and SDs. units are g/cm3
                      returnData = TRUE, pngName = NULL) {
   if (!exists(directory)) { # is "directory" an existing object (user-loaded DICOM matrix)
     
@@ -64,6 +58,35 @@ coreHist <- function(directory = file.choose(),
   } else if (exists(directory) & (sum(names(get(directory)) %in% c("hdr", "img")) == 2)){ # could have better error checking here
     fname <- get(directory)
   } else stop("Invalid input: 'directory' object or file location is incorrectly specified.")
+  
+  ##### section added 20190922 to separate calibration curve from component partitioning
+  densitydf <- data.frame(HU = means, density = densities)
+  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
+  if (summary(lm1)$r.squared < 0.95) { # print message to console if r2 < 0.95 
+    message(cat("\n Note: Calibration curve has limited explanatory power; r2 = ", round(summary(lm1)$r.squared, 3), "\n"))
+  }
+  densToHU <- stats::lm(HU ~ density, data = densitydf)
+  
+  partition.means <- stats::predict(densToHU, newdata = data.frame(density = c(0.0012, 1, 1.23, 2.2))) # this is hard-coded to reflect partitioning in Davey et al. 2011
+  
+  air.proxy   <- which.min(abs(means - partition.means[1])) # which element to use for air SD?
+  water.proxy <- which.min(abs(means - partition.means[2])) # which element to use for water SD?
+  Si.proxy    <- which.min(abs(means - partition.means[3])) # which element to use for Si SD?
+  glass.proxy <- which.min(abs(means - partition.means[4])) # which element to use for glass SD?
+  
+  partition.sds   <- c(sds[c(air.proxy, water.proxy, Si.proxy, glass.proxy)])
+  
+  ### now, set means and SDs used for partitioning
+  airHU      <- partition.means[1]
+  airSD      <- partition.sds[1]
+  waterHU    <- partition.means[2]
+  waterSD    <- partition.sds[2]
+  SiHU       <- partition.means[3]
+  SiSD       <- partition.sds[3]
+  glassHU    <- partition.means[4]
+  glassSD    <- partition.sds[4]
+  ##### end section added 20190922
+  
   
   # divisions between material classes
   splits <- data.frame(material = c("air",             "RR",                "water",         "peat",            "particles",         "sand",                   "rock_shell"),
