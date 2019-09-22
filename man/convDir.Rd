@@ -5,10 +5,8 @@
 \title{Convert a directory of raw DICOM images to material classes}
 \usage{
 convDir(directory = file.choose(), upperLim = 3045, lowerLim = -1025, 
-airHU = -850.3233, airSD = 77.6953, 
-SiHU = 271.7827, SiSD = 39.2814,
-glassHU = 1345.0696, glassSD = 45.4129,
-waterHU = 63.912, waterSD = 14.1728,
+means     = c(-850.3233, 63.912, 271.7827, 1345.0696), 
+sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
 densities = c(0.0012, 1, 1.23, 2.2),
 rootData = TRUE, 
 diameter.classes = c(1, 2, 2.5, 10), 
@@ -22,21 +20,9 @@ pixel.minimum = 4)
 
 \item{lowerLim}{lower bound cutoff for pixels (Hounsfield Units)}
 
-\item{airHU}{mean value for air-filled calibration rod (Hounsfield Units)}
+\item{means}{mean values (units = Hounsfield Units) for calibration rods used.}
 
-\item{airSD}{standard deviation for air-filled calibration rod}
-
-\item{SiHU}{mean value for colloidal silica calibration rod}
-
-\item{SiSD}{standard deviation for colloidal Si calibration rod}
-
-\item{glassHU}{mean value for glass calibration rod}
-
-\item{glassSD}{standard deviation for glass calibration rod}
-
-\item{waterHU}{mean value for water filled calibration rod}
-
-\item{waterSD}{standard deviation for water filled calibration rod}
+\item{sds}{standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.}
 
 \item{densities}{numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)}
 
