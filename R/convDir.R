@@ -99,6 +99,7 @@ convDir <- function(directory = file.choose(),
                          diameter.classes = diameter.classes, class.names = diameter.classes, 
                          means     = means,
                          sds       = sds,
+                         densities = densities,
                          pixel.minimum = pixel.minimum)
     # returnDat <- cbind(returnDat, rootsDat)
     returnDat <- plyr::join_all(list(returnDat, rootsDat), by = "depth")

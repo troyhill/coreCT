@@ -139,9 +139,11 @@ rootSize <- function (mat.list, pixelA,
         maskSieve <- raster::match(maskSieve, includeID)
         
         # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
-        a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE)) # number of "1"s x pixelSide = edge length
+        a2 <- data.frame( ### efficiency gain: remove this call to data.frame - used to ease creation of a3
+          raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE)) # number of "1"s x pixelSide = edge length
+        )
         if (nrow(clump.sub) > 0) {
-          a3 <- a2[[3]] * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
+          a3 <- a2$count[(a2$value == 1) & !is.na(a2$value)] * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
         } else if (nrow(clump.sub) == 0) {
           a3 <- 0
         }
@@ -159,7 +161,7 @@ rootSize <- function (mat.list, pixelA,
       }
     } else if (sum(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
       for (j in 2:length(diams)) {
-        outDatInt <- data.frame(particles = 0, surfArea = 0) #,surfaceVol = 0)
+        outDatInt <- data.frame(particles = 0, surfArea = 0, rootVolume = 0)
         names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
         if (j == 2) {
           outDatInt2 <- outDatInt 
