@@ -20,7 +20,7 @@
 #' @param returnData if \code{TRUE}, voxel counts for each Hounsfield unit from \code{lowerLim} to \code{upperLim} are returned, as are material class definitions. These are the data needed to re-create and modify the frequency plot.
 #' @param pngName if this is not \code{NULL}, the frequency plot is saved to disk. In that case, \code{pngName} should be a character string containing the name and address of the file. 
 #' 
-#' @return list if \code{returnData = TRUE}, a list is returned containing the frequencies for each Hounsfield unit value from \code{lowerLim} to \code{upperLim}, and (2) the boundaries for material classes. Lower boundaries for a component class are exclusive, while upper bounds are inclusive. These materials allow the frequency distribution to be plotted by the user. If \code{returnData = FALSE} the data are plotted in the graphics window, but nothing is preserved.
+#' @return list if \code{returnData = TRUE}, a list is returned containing (1) the frequencies for each Hounsfield unit value from \code{lowerLim} to \code{upperLim}, (2) the boundaries for material classes, and (3) a summary of the calibration curve applied. Lower boundaries for a component class are exclusive, while upper bounds are inclusive. These materials allow the frequency distribution to be plotted by the user. If \code{returnData = FALSE} the data are plotted in the graphics window, but nothing is preserved.
 #' 
 #' @examples
 #' # data(core_426)
@@ -61,7 +61,7 @@ coreHist <- function(directory = file.choose(),
   
   ##### section added 20190922 to separate calibration curve from component partitioning
   densitydf <- data.frame(HU = means, density = densities)
-  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
+  calCurve <- summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
   if (summary(lm1)$r.squared < 0.95) { # print message to console if r2 < 0.95 
     message(cat("\n Note: Calibration curve has limited explanatory power; r2 = ", round(summary(lm1)$r.squared, 3), "\n"))
   }
@@ -147,7 +147,7 @@ coreHist <- function(directory = file.choose(),
   
   if (returnData == TRUE) {
     outDat <- tempDat2[(tempDat2$Var1 < upperLim) & (tempDat2$Var1 > lowerLim), c("Var1", "finalFreq")]
-    return(list(histData = outDat, splits = splits))
+    return(list(histData = outDat, splits = splits, calCurve = calCurve))
   }
   
 }

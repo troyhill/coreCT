@@ -32,7 +32,7 @@ returnData = TRUE, pngName = NULL)
 \item{pngName}{if this is not \code{NULL}, the frequency plot is saved to disk. In that case, \code{pngName} should be a character string containing the name and address of the file.}
 }
 \value{
-list if \code{returnData = TRUE}, a list is returned containing the frequencies for each Hounsfield unit value from \code{lowerLim} to \code{upperLim}, and (2) the boundaries for material classes. Lower boundaries for a component class are exclusive, while upper bounds are inclusive. These materials allow the frequency distribution to be plotted by the user. If \code{returnData = FALSE} the data are plotted in the graphics window, but nothing is preserved.
+list if \code{returnData = TRUE}, a list is returned containing (1) the frequencies for each Hounsfield unit value from \code{lowerLim} to \code{upperLim}, (2) the boundaries for material classes, and (3) a summary of the calibration curve applied. Lower boundaries for a component class are exclusive, while upper bounds are inclusive. These materials allow the frequency distribution to be plotted by the user. If \code{returnData = FALSE} the data are plotted in the graphics window, but nothing is preserved.
 }
 \description{
 Provides the raw data and plots a frequency distibution for Hounsfield Units in the entire core, also delineating material classes.
