@@ -1,6 +1,6 @@
 #' @title Whole-core frequency distribution of Hounsfield units
 #'
-#' @description Provides the raw data and plots a frequency distibution for Hounsfield Units in the entire core, also delineating material classes.
+#' @description Provides the raw data and plots a frequency distibution for Hounsfield Units in the entire core, also delineating material classes. As of coreCT version 1.3.0, this code accommodates calibration curves with >4 calibrants, and uses density thresholds converted to Hounsfield Units using the calibration curve (rather than direct calibration rod values) to partition sediment components. 
 #'
 #' @usage coreHist(directory = file.choose(), 
 #' units = "percent",

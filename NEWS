@@ -1,3 +1,11 @@
+coreCT version 1.3.2 (release date: 2019-10-06)
+==================
+Changes:
+* renames the primary functions: convert, convertDir, getRoots, getRootsDir
+* includes deprecated versions of these functions (conv, convDir, rootData, rootDataDir) that directly replicate the manual classification method used by Earl Davey
+
+
+
 coreCT version 1.3.1 (release date: 2019-09-28)
 ==================
 

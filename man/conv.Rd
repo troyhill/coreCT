@@ -2,12 +2,14 @@
 % Please edit documentation in R/conv.R
 \name{conv}
 \alias{conv}
-\title{Convert a matrix of semi-processed DICOM images to mass and volume of material classes}
+\title{Convert a matrix of semi-processed DICOM images to mass and volume of material classes. This is a deprecated version.}
 \usage{
 conv(mat.list, upperLim = 3045, lowerLim = -1025, 
 pixelA, thickness = 0.625, # all in mm 
-means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
-sds       = c(77.6953, 14.1728, 39.2814, 45.4129),
+airHU = -850.3233, airSD = 77.6953, 
+SiHU = 271.7827, SiSD = 39.2814,
+glassHU = 1345.0696, glassSD = 45.4129,
+waterHU = 63.912, waterSD = 14.1728,
 densities = c(0.0012, 1, 1.23, 2.2))
 }
 \arguments{
@@ -19,22 +21,34 @@ densities = c(0.0012, 1, 1.23, 2.2))
 
 \item{pixelA}{pixel area (mm2)}
 
-\item{thickness}{slice thickness for computed tomography image series (mm)}
+\item{thickness}{CT image thickness (mm)}
 
-\item{means}{mean values (units = Hounsfield Units) for calibration rods used.}
+\item{airHU}{mean value for air-filled calibration rod (Hounsfield Units)}
 
-\item{sds}{standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.}
+\item{airSD}{standard deviation for air-filled calibration rod}
 
-\item{densities}{numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.}
+\item{SiHU}{mean value for colloidal silica calibration rod}
+
+\item{SiSD}{standard deviation for colloidal Si calibration rod}
+
+\item{glassHU}{mean value for glass calibration rod}
+
+\item{glassSD}{standard deviation for glass calibration rod}
+
+\item{waterHU}{mean value for water filled calibration rod}
+
+\item{waterSD}{standard deviation for water filled calibration rod}
+
+\item{densities}{numeric vector of known cal rod densities. Format must be c(air, water, Si, glass)}
 }
 \value{
 value \code{conv} returns a dataframe with one row per CT slice. Values returned are the average Hounsfield Unit value, the area (cm2), volume (cm3), and mass (grams) of 7 material classes: gas, peat, roots and rhizomes, particulates, sand, water, and rock/shell. If <code>rootData = TRUE</code>, data for specified root size classes are also returned. See <code>rootSize</code> for more detail on those values.
 }
 \description{
-Converts raw CT units to material classes for each CT slice.
+Converts raw CT units to material classes for each CT slice, directly replicating Earl Davey's manual classification approach. This method is deprecated as of coreCT version 1.3.0.
 }
 \details{
-Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particulates, sand, and rock/shell. The input style for calibration rods ensures sediment components are partitioned following the density divisions in Davey et al. 2011. Calibration rods and are used to develop the calibration curve. Separately, the densities used for partitioning in Davey et al. 2011 (0.0012, 1, 1.23, 2.2 g/cm3) are converted to Hounsfield Units and used for partitioning sediment components. The standard deviation for the calibration rod nearest to the target value is used for the standard deviation for the division between two sediment components.
+Calculates average Hounsfield units, cross-sectional areas (cm2), volumes (cm3), and masses (g) of material classes for each CT slice. This function assumes that core walls and all non-sediment material have been removed from the raw DICOM imagery. This function converts data from raw x-ray attenuation values to Hounsfield Units, and then uses user-defined calibration rod inputs to categorize sediment components: air, roots and rhizomes, peat, water, particulates, sand, and rock/shell.
 }
 \examples{
 ct.slope <- unique(extractHeader(core_426$hdr, "RescaleSlope"))

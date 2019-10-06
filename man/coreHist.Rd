@@ -35,7 +35,7 @@ returnData = TRUE, pngName = NULL)
 list if \code{returnData = TRUE}, a list is returned containing (1) the frequencies for each Hounsfield unit value from \code{lowerLim} to \code{upperLim}, (2) the boundaries for material classes, and (3) a summary of the calibration curve applied. Lower boundaries for a component class are exclusive, while upper bounds are inclusive. These materials allow the frequency distribution to be plotted by the user. If \code{returnData = FALSE} the data are plotted in the graphics window, but nothing is preserved.
 }
 \description{
-Provides the raw data and plots a frequency distibution for Hounsfield Units in the entire core, also delineating material classes.
+Provides the raw data and plots a frequency distibution for Hounsfield Units in the entire core, also delineating material classes. As of coreCT version 1.3.0, this code accommodates calibration curves with >4 calibrants, and uses density thresholds converted to Hounsfield Units using the calibration curve (rather than direct calibration rod values) to partition sediment components.
 }
 \examples{
 # data(core_426)

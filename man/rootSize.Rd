@@ -7,9 +7,10 @@
 rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 2.5, 10),
 class.names = diameter.classes,
 thickness = 0.625,
-means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
-sds       = c(77.6953, 14.1728, 39.2814, 45.4129), 
-densities = c(0.0012, 1, 1.23, 2.2),
+airHU = -850.3233,
+airSD = 77.6953,
+waterHU = 63.912,
+waterSD = 14.1728,
 pixel.minimum = 4)
 }
 \arguments{
@@ -21,13 +22,15 @@ pixel.minimum = 4)
 
 \item{class.names}{not used presently}
 
-\item{thickness}{slice thickness for computed tomography image series (mm)}
+\item{thickness}{CT image thickness (mm)}
 
-\item{means}{mean values (units = Hounsfield Units) for calibration rods used.}
+\item{airHU}{mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)}
 
-\item{sds}{standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.}
+\item{airSD}{standard deviation for air-filled calibration rod}
 
-\item{densities}{numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.}
+\item{waterHU}{mean value for water-filled calibration rod}
+
+\item{waterSD}{standard deviation for water-filled calibration rod}
 
 \item{pixel.minimum}{minimum number of pixels needed for a clump to be identified as a root}
 }
@@ -35,7 +38,7 @@ pixel.minimum = 4)
 value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number, volume (cm3), and surface area (cm2) of particles in each size class with an upper bound defined in \code{diameter.classes}.
 }
 \description{
-Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes
+Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes.  This approach  directly replicates Earl Davey's manual classification approach. This method is deprecated as of coreCT version 1.3.0.
 }
 \details{
 Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).

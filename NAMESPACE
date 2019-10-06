@@ -2,7 +2,11 @@
 
 export(conv)
 export(convDir)
+export(convert)
+export(convertDir)
 export(coreHist)
+export(getRoots)
+export(getRootsDir)
 export(getSurface)
 export(rootSize)
 export(rootSizeDir)

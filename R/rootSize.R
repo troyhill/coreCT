@@ -1,25 +1,27 @@
 #' @title Convert a matrix of semi-processed DICOM images to root particle counts, volumes, and surface areas
 #'
-#' @description Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes
+#' @description Calculates the number of root/rhizome particles, volumes,  and surface areas, for different size classes.  This approach  directly replicates Earl Davey's manual classification approach. This method is deprecated as of coreCT version 1.3.0.
 #'
 #' @details Calculates the number of root/rhizome particles, volumes, and surface areas, for different size classes. This function requires that values be Hounsfield Units (i.e., data must be semi-processed from the raw DICOM imagery).
 #' 
 #' @usage rootSize(mat.list, pixelA, diameter.classes = c(1, 2, 2.5, 10),
 #' class.names = diameter.classes,
 #' thickness = 0.625,
-#' means     = c(-850.3233, 63.912, 271.7827, 1345.0696),
-#' sds       = c(77.6953, 14.1728, 39.2814, 45.4129), 
-#' densities = c(0.0012, 1, 1.23, 2.2),
+#' airHU = -850.3233,
+#' airSD = 77.6953,
+#' waterHU = 63.912,
+#' waterSD = 14.1728,
 #' pixel.minimum = 4)
 #' 
 #' @param mat.list list of DICOM images for a sediment core (values in Hounsfield Units)
 #' @param pixelA pixel area (mm2)
 #' @param diameter.classes an integer vector of diameter cut points. Units are mm (zero is added in automatically).
 #' @param class.names not used presently
-#' @param thickness slice thickness for computed tomography image series (mm)
-#' @param means mean values (units = Hounsfield Units) for calibration rods used.
-#' @param sds standard deviations (units = Hounsfield Units) for calibration rods used. Must be in the same order as \code{means}.
-#' @param densities numeric vector of known cal rod densities. Must be in the same order as \code{means} and \code{sds}.
+#' @param thickness CT image thickness (mm)
+#' @param airHU mean value for air-filled calibration rod (all rod arguments are in Hounsfield Units)
+#' @param airSD standard deviation for air-filled calibration rod
+#' @param waterHU mean value for water-filled calibration rod
+#' @param waterSD standard deviation for water-filled calibration rod
 #' @param pixel.minimum minimum number of pixels needed for a clump to be identified as a root
 #' 
 #' @return value \code{rootSize} returns a dataframe with one row per CT slice. Values returned are the number, volume (cm3), and surface area (cm2) of particles in each size class with an upper bound defined in \code{diameter.classes}.
@@ -55,7 +57,6 @@
 #' @importFrom utils txtProgressBar
 #' @importFrom oro.dicom extractHeader
 #' @importFrom oro.dicom readDICOM
-#' @importFrom stats predict
 #' 
 #' @export
 
@@ -63,42 +64,13 @@ rootSize <- function (mat.list, pixelA,
                       diameter.classes = c(1, 2, 2.5, 10), # mm, targets clumps less than or equal to "diameter" argument
                       class.names = diameter.classes,
                       thickness = 0.625, # mm
-                      means     = c(-850.3233, 63.912, 271.7827, 1345.0696),  # all cal rod units are in Hounsfield Units
-                      sds       = c(77.6953, 14.1728, 39.2814, 45.4129),  # in same order as means. units are in Hounsfield Units
-                      densities = c(0.0012, 1, 1.23, 2.2),
+                      airHU = -850.3233, # Hounsfield Units
+                      airSD = 77.6953,
+                      waterHU = 63.912,
+                      waterSD = 14.1728,
                       pixel.minimum = 4) {
   # function creates dataframe with root/rhizome numbers and perimeter(!) for each depth interval
   pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
-  
-  ##### section added 20190922 to separate calibration curve from component partitioning
-  densitydf <- data.frame(HU = means, density = densities)
-  summary(lm1 <- stats::lm(density ~ HU, data = densitydf)) # density in g/cm3
-  if (summary(lm1)$r.squared < 0.95) { # print message to console if r2 < 0.95 
-    message(cat("\n Note: Calibration curve has limited explanatory power; r2 = ", round(summary(lm1)$r.squared, 3), "\n"))
-  }
-  densToHU <- stats::lm(HU ~ density, data = densitydf)
-  
-  partition.means <- stats::predict(densToHU, newdata = data.frame(density = c(0.0012, 1, 1.23, 2.2))) # this is hard-coded to reflect partitioning in Davey et al. 2011
-  
-  air.proxy   <- which.min(abs(means - partition.means[1])) # which element to use for air SD?
-  water.proxy <- which.min(abs(means - partition.means[2])) # which element to use for water SD?
-  Si.proxy    <- which.min(abs(means - partition.means[3])) # which element to use for Si SD?
-  glass.proxy <- which.min(abs(means - partition.means[4])) # which element to use for glass SD?
-  
-  partition.sds   <- c(sds[c(air.proxy, water.proxy, Si.proxy, glass.proxy)])
-  
-  ### now, set means and SDs used for partitioning
-  airHU      <- partition.means[1]
-  airSD      <- partition.sds[1]
-  waterHU    <- partition.means[2]
-  waterSD    <- partition.sds[2]
-  SiHU       <- partition.means[3]
-  SiSD       <- partition.sds[3]
-  glassHU    <- partition.means[4]
-  glassSD    <- partition.sds[4]
-  ##### end section added 20190922
-  
-  
   voxelVol <- pixelA * thickness / 1e3 # cm3
   air.UB <- airHU + airSD # lower bound on R&R, exclusive. earl adds 1 to this quantity to start next category
   water.LB <- waterHU - waterSD # upper bound on R&R, inclusive
@@ -139,10 +111,9 @@ rootSize <- function (mat.list, pixelA,
         maskSieve <- raster::match(maskSieve, includeID)
         
         # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
-        a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE), value = 1) # number of "1"s x pixelSide = edge length
-        
+        a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE)) # number of "1"s x pixelSide = edge length
         if (nrow(clump.sub) > 0) {
-          a3 <- a2 * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
+          a3 <- a2[[3]] * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
         } else if (nrow(clump.sub) == 0) {
           a3 <- 0
         }
@@ -160,7 +131,7 @@ rootSize <- function (mat.list, pixelA,
       }
     } else if (sum(!is.na(temp)) == 0) { # fill in zeroes if there aren't any clumps
       for (j in 2:length(diams)) {
-        outDatInt <- data.frame(particles = 0, surfArea = 0, rootVolume = 0)
+        outDatInt <- data.frame(particles = 0, surfArea = 0) #,surfaceVol = 0)
         names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
         if (j == 2) {
           outDatInt2 <- outDatInt 
