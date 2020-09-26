@@ -130,28 +130,32 @@ getRoots <- function (mat.list, pixelA,
         clump.sub <- clump.sub1[ (clump.sub1$count <= thresh.pixels[j]) & 
                                    (clump.sub1$count > thresh.pixels[j-1]) & 
                                    !is.na(clump.sub1$value), ] #clump.sub$A <- clump.sub$count * pixelArea
-        includeID <- as.vector(clump.sub$value) # record IDs from clumps which met the criteria in previous step
-        rootVol  <- sum(as.vector(clump.sub$count) * voxelVol) # sum clump volumes in cm3
-        # get root perimeter (then multiply by thickness to calculate external surface area)
-        # make a new raster to be sieved
-        maskSieve <- rmat.int
-        # assign NA to all clumps whose IDs are NOT found in excludeID
-        # maskSieve[!maskSieve %in% includeID] <- NA # 
-        maskSieve <- raster::match(maskSieve, includeID)
-        
-        # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
-        a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE), value = 1) # number of "1"s x pixelSide = edge length
-        
         if (nrow(clump.sub) > 0) {
+          includeID <- as.vector(clump.sub$value) # record IDs from clumps which met the criteria in previous step
+          rootVol  <- sum(as.vector(clump.sub$count) * voxelVol) # sum clump volumes in cm3
+          # get root perimeter (then multiply by thickness to calculate external surface area)
+          # make a new raster to be sieved
+          maskSieve <- rmat.int
+          # assign NA to all clumps whose IDs are NOT found in excludeID
+          # maskSieve[!maskSieve %in% includeID] <- NA # 
+          maskSieve <- raster::match(maskSieve, includeID)
+          
+          # calculate perimeter based on clump results # plot(boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE))
+          a2 <- raster::freq(raster::boundaries(maskSieve, classes = FALSE, directions = 8, asNA = TRUE), value = 1) # number of "1"s x pixelSide = edge length
+        
           a3 <- a2 * sqrt(pixelA) # mm of edge length; sqrt() reflects assumption that one side of pixel contributes to perimeter (neglects corners; lower-bound estimate) # (sqrt(2*sqrt(pixelArea)^2) - sqrt(pixelArea)) / sqrt(pixelArea)
+          numberOfClumps <- nrow(clump.sub)
+          rootSurfaceArea <- a3 * thickness / 100 # edge length (mm) * thickness (mm) = mm2 /100 = cm2 of external root surface area in slice
+          # rootSurfaceVol <- rootSurfaceArea * (thickness / 10) # cm3 # tdh: probably not a meaningful parameter
+          outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea, rootVolume = rootVol) #,surfaceVol = rootSurfaceVol)
+          names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
+          
         } else if (nrow(clump.sub) == 0) {
           a3 <- 0
+          outDatInt <- data.frame(particles = 0, surfArea = 0, rootVolume = 0)
+          names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
+          
         }
-        numberOfClumps <- nrow(clump.sub)
-        rootSurfaceArea <- a3 * thickness / 100 # edge length (mm) * thickness (mm) = mm2 /100 = cm2 of external root surface area in slice
-        # rootSurfaceVol <- rootSurfaceArea * (thickness / 10) # cm3 # tdh: probably not a meaningful parameter
-        outDatInt <- data.frame(particles = numberOfClumps, surfArea = rootSurfaceArea, rootVolume = rootVol) #,surfaceVol = rootSurfaceVol)
-        names(outDatInt) <- paste0(names(outDatInt), ".", diams[j - 1], "_", diams[j], "mm")
         
         if (j == 2) {
           outDatInt2 <- outDatInt 
@@ -198,6 +202,6 @@ getRoots <- function (mat.list, pixelA,
   outDat$structures <- base::rowSums(outDat[, grep("particles", names(outDat))])
   outDat$totArea    <- base::rowSums(outDat[, grep("Area", names(outDat))])
   # outDat$totVol <- base::rowSums(outDat[, grep("Vol", names(outDat))])
-  outDat
   cat("\n")
+  outDat
 }

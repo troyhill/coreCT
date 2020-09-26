@@ -52,7 +52,7 @@ plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)",
 This can be done more easily with coreCT::convDir, which automatically extracts DICOM metadata associated with pixel dimensions and converts raw values to Hounsfield Units:
 
 ```{r, message=FALSE, warning=FALSE, results = "hide"}
-materials <- convertDir("core_426")
+materials <- convertDir("core_426", rootData = FALSE)
 
 plot(-depth ~ peat.cm3, data = materials, xlab = "Peat volume (cm3; per slice)", ylab = "Depth (cm)")
 ```
