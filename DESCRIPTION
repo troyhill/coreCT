@@ -19,7 +19,7 @@ Depends:
     igraph,
     oro.dicom,
     plyr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Suggests: knitr,
     rmarkdown,
     testthat,

@@ -4,7 +4,9 @@
 \name{core_426}
 \alias{core_426}
 \title{Three computed tomography scans from a Spartina alterniflora core}
-\format{A list of 3 matrices, each with two elements: header and image data}
+\format{
+A list of 3 matrices, each with two elements: header and image data
+}
 \usage{
 data(core_426)
 }
