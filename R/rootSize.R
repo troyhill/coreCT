@@ -144,7 +144,19 @@ rootSize <- function (mat.list, pixelA,
     # convert NAs to zeroes
     outDatInt2$depth <- depth
     
-    if ((i > 1)  & exists("outDat")) {
+    if ((i > 1) & exists("outDat")) {
+      ### this is to avoid use of plyr::rbind.fill
+      missing.names.outDat <- which(!names(outDatInt2) %in% names(outDat))
+      missing.names.newRow <- which(!names(outDat) %in% names(outDatInt2))
+      if (length(missing.names.outDat) > 0) {
+        outDat[, names(outDatInt2)[missing.names.outDat]] <- NA
+      } 
+      if (length(missing.names.newRow) > 0) {
+        outDatInt2[, names(outDat)[missing.names.newRow]] <- NA
+      } 
+      outDatInt2 <- outDatInt2[, names(outDat)] # re-organize if necessary, to match column order in outDat
+      ###
+      # equivalent to: outDat <- plyr::rbind.fill(list(outDat, outDatInt2)) # preserve all columns
       outDat <- rbind(outDat, outDatInt2)
     } else {
       outDat <- outDatInt2
@@ -158,3 +170,4 @@ rootSize <- function (mat.list, pixelA,
   # outDat$totVol <- base::rowSums(outDat[, grep("Vol", names(outDat))])
   outDat
 }
+

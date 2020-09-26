@@ -68,6 +68,7 @@ getRoots <- function (mat.list, pixelA,
                       densities = c(0.0012, 1, 1.23, 2.2),
                       pixel.minimum = 4) {
   # function creates dataframe with root/rhizome numbers and perimeter(!) for each depth interval
+  cat("\n Processing root data: \n")
   pb <- utils::txtProgressBar(min = 0, max = length(mat.list), initial = 0, style = 3)
   
   ##### section added 20190922 to separate calibration curve from component partitioning
@@ -174,6 +175,18 @@ getRoots <- function (mat.list, pixelA,
     outDatInt2$depth <- depth
     
     if ((i > 1)  & exists("outDat")) {
+      ### this is to avoid use of plyr::rbind.fill
+      missing.names.outDat <- which(!names(outDatInt2) %in% names(outDat))
+      missing.names.newRow <- which(!names(outDat) %in% names(outDatInt2))
+      if (length(missing.names.outDat) > 0) {
+        outDat[, names(outDatInt2)[missing.names.outDat]] <- NA
+      } 
+      if (length(missing.names.newRow) > 0) {
+        outDatInt2[, names(outDat)[missing.names.newRow]] <- NA
+      } 
+      outDatInt2 <- outDatInt2[, names(outDat)] # re-organize if necessary, to match column order in outDat
+      ###
+      # equivalent to: outDat <- plyr::rbind.fill(list(outDat, outDatInt2)) # preserve all columns
       outDat <- rbind(outDat, outDatInt2)
     } else {
       outDat <- outDatInt2
@@ -186,4 +199,5 @@ getRoots <- function (mat.list, pixelA,
   outDat$totArea    <- base::rowSums(outDat[, grep("Area", names(outDat))])
   # outDat$totVol <- base::rowSums(outDat[, grep("Vol", names(outDat))])
   outDat
+  cat("\n")
 }
