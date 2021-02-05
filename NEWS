@@ -1,4 +1,4 @@
-coreCT version 1.3.3 (release date: TBD)
+coreCT version 1.3.3 (release date: 2021-02-05)
 ==================
 Changes:
 * getRoots() and deprecated function rootSize() merge data after verifying column names and order.
